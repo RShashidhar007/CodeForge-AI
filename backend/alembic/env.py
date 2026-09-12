@@ -19,9 +19,10 @@ config = context.config
 
 # Get database URL from environment variable or config
 # This allows migrations to run without full settings validation
+# Supports both PostgreSQL and MSSQL
 db_url = os.getenv(
     "DB_URL",
-    "postgresql://postgres:change-me@localhost:5432/recruitment_platform"
+    "mssql+pyodbc://sa:Admin@123456@localhost:1433/recruitment_platform?driver=ODBC+Driver+17+for+SQL+Server&TrustServerCertificate=yes"
 )
 config.set_main_option("sqlalchemy.url", db_url)
 
