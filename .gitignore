@@ -1,0 +1,107 @@
+# Python Backend
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+backend/venv/
+backend/ENV/
+backend/env/
+venv/
+ENV/
+env/
+
+# Environment files (NEVER COMMIT SECRETS!)
+.env
+.env.local
+.env.*.local
+backend/.env
+backend/.env.local
+frontend/.env.local
+*.env
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+.Spotlight-V100
+.Trashes
+
+# Node (Frontend)
+node_modules/
+frontend/dist/
+frontend/build/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+test.db
+coverage/
+.nyc_output/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+*.sqliteschema
+
+# Logs
+*.log
+logs/
+log/
+
+# Alembic
+backend/alembic/versions/*.pyc
+
+# Build artifacts
+build/
+dist/
+*.tar.gz
+*.zip
+
+# Docker
+.docker/
+docker-compose.override.yml
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+~*
+.#*
+
+# IDE-specific
+*.sublime-workspace
+*.sublime-project
