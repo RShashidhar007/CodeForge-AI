@@ -2,6 +2,7 @@
 Alembic environment configuration.
 """
 from logging.config import fileConfig
+import os
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
@@ -9,7 +10,6 @@ from sqlalchemy import pool
 from alembic import context
 
 # Import app configuration and models
-from app.core.config import settings
 from app.db.base import Base
 from app.models import user, candidate, recruiter, company, project, ai  # Import all models
 
@@ -17,8 +17,13 @@ from app.models import user, candidate, recruiter, company, project, ai  # Impor
 # access to the values within the .ini file in use.
 config = context.config
 
-# Set sqlalchemy.url from settings
-config.set_main_option("sqlalchemy.url", settings.db_url)
+# Get database URL from environment variable or config
+# This allows migrations to run without full settings validation
+db_url = os.getenv(
+    "DB_URL",
+    "postgresql://postgres:change-me@localhost:5432/recruitment_platform"
+)
+config.set_main_option("sqlalchemy.url", db_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
