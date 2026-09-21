@@ -16,11 +16,42 @@ from sqlalchemy import (
     Enum as SQLEnum,
 )
 from sqlalchemy.orm import relationship
-from sqlalchemy.dialects.postgresql import UUID, VECTOR
+from sqlalchemy.types import TypeDecorator, VARBINARY
 import enum
 import uuid
+import json
 
 from app.db.base import Base
+
+
+class VectorType(TypeDecorator):
+    """
+    Custom type to store vector embeddings.
+    Stores as JSON text in MSSQL, uses pgvector in PostgreSQL.
+    """
+    impl = Text
+    cache_ok = True
+
+    def process_bind_param(self, value, dialect):
+        """Convert Python list to JSON string for storage."""
+        if value is None:
+            return None
+        if isinstance(value, str):
+            return value
+        # Convert list to JSON string
+        return json.dumps(value)
+
+    def process_result_value(self, value, dialect):
+        """Convert JSON string back to Python list."""
+        if value is None:
+            return None
+        if isinstance(value, list):
+            return value
+        # Parse JSON string back to list
+        try:
+            return json.loads(value)
+        except (json.JSONDecodeError, TypeError):
+            return None
 
 
 class IndexStatus(str, enum.Enum):
@@ -79,8 +110,8 @@ class CodeChunk(Base):
     end_line = Column(Integer, nullable=False)
     symbol_name = Column(String(255), nullable=True)  # Function/class name if available
     language = Column(String(50), nullable=False)
-    # Vector embedding - will be populated after pgvector setup
-    embedding = Column(VECTOR(1536), nullable=True)  # 1536 dims for OpenAI Ada
+    # Vector embedding - stored as JSON for MSSQL compatibility
+    embedding = Column(VectorType, nullable=True)  # 1536 dims for OpenAI Ada
     embedding_model = Column(String(100), nullable=True)  # Track which model generated this
     token_count = Column(Integer, nullable=True)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)

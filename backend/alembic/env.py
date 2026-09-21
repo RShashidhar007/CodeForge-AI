@@ -6,6 +6,7 @@ import os
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
+from sqlalchemy import create_engine
 
 from alembic import context
 
@@ -24,7 +25,6 @@ db_url = os.getenv(
     "DB_URL",
     "mssql+pyodbc://sa:Admin@123456@localhost:1433/recruitment_platform?driver=ODBC+Driver+17+for+SQL+Server&TrustServerCertificate=yes"
 )
-config.set_main_option("sqlalchemy.url", db_url)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
@@ -72,9 +72,9 @@ def run_migrations_online() -> None:
     and associate a connection with the context.
 
     """
-    connectable = engine_from_config(
-        config.get_section(config.config_ini_section, {}),
-        prefix="sqlalchemy.",
+    # Use the db_url directly instead of going through the config
+    connectable = create_engine(
+        db_url,
         poolclass=pool.NullPool,
     )
 
