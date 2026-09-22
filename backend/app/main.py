@@ -41,16 +41,18 @@ async def lifespan(app: FastAPI):
     """
     # Startup: create tables and bootstrap admin
     logger.info("Starting up...")
-    Base.metadata.create_all(bind=engine)
-    
-    # Bootstrap admin account
-    db = SessionLocal()
     try:
-        bootstrap_admin(db)
-    finally:
-        db.close()
-    
-    logger.info("Startup complete")
+        Base.metadata.create_all(bind=engine)
+        
+        # Bootstrap admin account
+        db = SessionLocal()
+        try:
+            bootstrap_admin(db)
+        finally:
+            db.close()
+        logger.info("Startup complete")
+    except Exception as e:
+        logger.warning(f"Database initialization failed: {e}. App will continue but database operations may fail until connection is established.")
     
     yield
     
