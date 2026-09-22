@@ -47,3 +47,14 @@ alembic/versions/*.pyc
 # OS
 .DS_Store
 Thumbs.db
+
+# Maven/Java Build
+target/
+*.class
+*.jar
+*.war
+*.ear
+dependency-reduced-pom.xml
+.classpath
+.project
+.settings/
