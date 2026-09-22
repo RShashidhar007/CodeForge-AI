@@ -1,43 +1,37 @@
-# Python FastAPI Backend Dockerfile
+# Multi-stage build for Spring Boot application
+# Stage 1: Build
+FROM maven:3.9.4-eclipse-temurin-17 AS builder
 
-FROM python:3.12-slim
-
-# Set working directory
 WORKDIR /app
 
-# Install system dependencies (including ODBC driver for MSSQL)
-RUN apt-get update && apt-get install -y \
-    curl \
-    wget \
-    apt-transport-https \
-    ca-certificates \
-    gnupg2 \
-    unixodbc-dev \
-    && rm -rf /var/lib/apt/lists/*
+# Copy pom.xml and download dependencies
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Add Microsoft ODBC repository for MSSQL support
-RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor > /usr/share/keyrings/microsoft-prod.gpg \
-    && curl https://packages.microsoft.com/config/debian/12/prod.list | tee /etc/apt/sources.list.d/mssql-release.list
+# Copy source code
+COPY src ./src
 
-# Install MSSQL ODBC driver
-RUN apt-get update && ACCEPT_EULA=Y apt-get install -y msodbcsql17 \
-    && rm -rf /var/lib/apt/lists/*
+# Build application
+RUN mvn clean package -DskipTests -B
 
-# Copy requirements first for better caching
-COPY requirements.txt .
+# Stage 2: Runtime
+FROM eclipse-temurin:17-jre-alpine
 
-# Install Python dependencies
-RUN pip install --no-cache-dir -r requirements.txt
+WORKDIR /app
 
-# Copy application code
-COPY . .
+# Install bash for debugging
+RUN apk add --no-cache bash
+
+# Copy JAR from builder
+COPY --from=builder /app/target/codeforge-backend-*.jar app.jar
 
 # Expose port
 EXPOSE 8080
 
 # Health check
-HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD python -c "import requests; requests.get('http://localhost:8080/actuator/health')" || exit 1
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD java -cp app.jar -Dspring.config.location=classpath:/application.properties \
+    org.springframework.boot.loader.JarLauncher health || exit 1
 
-# Run migrations and start application
-CMD uvicorn app.main:app --host 0.0.0.0 --port 8080
+# Run application
+ENTRYPOINT ["java", "-jar", "app.jar"]

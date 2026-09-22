@@ -1,9 +1,10 @@
 # CodeForge AI - AI-Powered Recruitment & Code Intelligence Platform
 
 [![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)]()
-[![Python](https://img.shields.io/badge/Python-3.12%2B-blue)]()
+[![Java](https://img.shields.io/badge/Java-17%2B-red)]()
+[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.3-brightgreen)]()
 [![React](https://img.shields.io/badge/React-19-blue)]()
-[![FastAPI](https://img.shields.io/badge/FastAPI-0.109-blue)]()
+[![MSSQL](https://img.shields.io/badge/MSSQL%20Server-2022-blue)]()
 [![License](https://img.shields.io/badge/License-MIT-green)]()
 
 > **An AI-powered platform for intelligent recruitment and code analysis** combining secure authentication, semantic code search, and multi-agent AI software engineering.
@@ -54,20 +55,20 @@ CodeForge AI transforms technical recruitment by combining:
 
 | Component | Technology | Version |
 |-----------|-----------|---------|
-| **Backend** | FastAPI | 0.109.0 |
-| **Language** | Python | 3.12+ |
-| **ORM** | SQLAlchemy | 2.0 |
-| **Database** | PostgreSQL + pgvector | 16 |
-| **Cache** | Redis | Latest |
-| **Authentication** | JWT + BCrypt | - |
+| **Backend** | Spring Boot | 3.2.3 |
+| **Language** | Java | 17+ |
+| **Framework** | Spring Framework 6 | Latest |
+| **Database** | MSSQL Server | 2022+ |
+| **ORM** | Spring Data JPA + Hibernate | 6.4.4 |
+| **Cache** | Redis | 7+ |
+| **Authentication** | Auth0 JWT | 4.4.0 |
+| **Password Hashing** | BCrypt | - |
+| **Build Tool** | Maven | 3.9+ |
 | **AI/LLM** | OpenAI API | GPT-4 Turbo |
-| **Embeddings** | OpenAI | text-embedding-3-small |
-| **Agent Orchestration** | LangGraph | - |
 | **Frontend** | React | 19 |
 | **Language** | TypeScript | 6 |
 | **Build Tool** | Vite | 8 |
 | **HTTP Client** | Axios | Latest |
-| **Routing** | React Router | Latest |
 | **Infrastructure** | Docker Compose | Latest |
 
 ## 🏗 Architecture
@@ -79,32 +80,39 @@ CodeForge AI transforms technical recruitment by combining:
 └────────────────────────┬────────────────────────────┘
                          │ HTTPS/REST
 ┌────────────────────────▼────────────────────────────┐
-│              FastAPI Backend                         │
+│          Spring Boot 3.2.3 Backend (Java 17+)       │
 │  ┌─────────────────────────────────────────────┐  │
-│  │  27 REST API Endpoints                      │  │
-│  │  - Auth (3), Users (4), Admin (3)          │  │
-│  │  - AI/RAG (7), Agent Tasks (5)             │  │
+│  │  27 REST API Endpoints (Spring MVC)         │  │
+│  │  - Auth (3), Candidates (2), Recruiters (2) │  │
+│  │  - Admin (5), AI/RAG (7), Tasks (5)         │  │
 │  │  - Health (1)                              │  │
 │  └─────────────────────────────────────────────┘  │
 │  ┌─────────────────────────────────────────────┐  │
 │  │  Service Layer                              │  │
-│  │  - AuthService, RAGService, LLMProvider    │  │
-│  │  - EmbeddingService, RepositoryIndexer    │  │
-│  │  - AgentOrchestrator                       │  │
+│  │  - AuthService, CandidateService           │  │
+│  │  - RecruiterService, AdminService          │  │
+│  │  - AIService, TaskService                  │  │
 │  └─────────────────────────────────────────────┘  │
 │  ┌─────────────────────────────────────────────┐  │
-│  │  Multi-Agent System (LangGraph)             │  │
-│  │  - 10 Specialized Agents                    │  │
-│  │  - Task Workflow Engine                     │  │
-│  │  - Human Approval Gates                     │  │
+│  │  Spring Data JPA + Hibernate 6.4.4          │  │
+│  │  - 20 Entity Classes (Users, Candidates...)│  │
+│  │  - 20 Repository Interfaces                │  │
+│  │  - Transaction Management                  │  │
+│  └─────────────────────────────────────────────┘  │
+│  ┌─────────────────────────────────────────────┐  │
+│  │  Spring Security 6.x                        │  │
+│  │  - JWT Authentication                      │  │
+│  │  - Role-Based Access Control               │  │
+│  │  - Method-Level Security                   │  │
 │  └─────────────────────────────────────────────┘  │
 └────────────────┬────────────────────┬──────────────┘
                  │                    │
     ┌────────────▼──────────┐  ┌──────▼─────────────┐
-    │   PostgreSQL 16       │  │    Redis Cache     │
-    │   + pgvector          │  │    (Embeddings)    │
+    │   MSSQL Server 2022   │  │    Redis 7+        │
+    │                       │  │    (Cache)         │
     │   20 Tables           │  │                    │
-    │   1536-dim Vectors    │  └────────────────────┘
+    │   Relationships       │  │                    │
+    │   Indexes             │  └────────────────────┘
     └───────────────────────┘
          │
          └─────────────────────────────────────────┐
@@ -121,92 +129,101 @@ CodeForge AI transforms technical recruitment by combining:
 ```
 CodeForge-AI/
 ├── 📄 README.md                      ← You are here
-├── 📄 SETUP.md                       ← Setup & installation guide
-├── 📄 .gitignore                     ← Excludes secrets, caches, dependencies
 ├── 📄 docker-compose.yml             ← Complete local dev environment
+├── 📄 .gitignore                     ← Excludes secrets, caches, dependencies
 │
-├── 📁 backend/                       ← FastAPI Python backend
-│   ├── app/
-│   │   ├── main.py                   ← FastAPI entry point
-│   │   ├── api/routes/               ← HTTP endpoints (27 total)
-│   │   │   ├── auth.py               ├─ Authentication (login, register)
-│   │   │   ├── admin.py              ├─ Admin operations (users, stats)
-│   │   │   ├── candidates.py         ├─ Candidate profiles
-│   │   │   ├── recruiters.py         ├─ Recruiter profiles
-│   │   │   ├── ai.py                 ├─ AI/RAG endpoints (chat, analysis)
-│   │   │   └── agent_tasks.py        └─ Multi-agent task management
+├── 📁 backend/                       ← Spring Boot Java backend
+│   ├── src/main/java/com/codeforge/
+│   │   ├── CodeForgeApplication.java ← Spring Boot entry point
+│   │   ├── controller/               ← Spring MVC controllers (27 endpoints)
+│   │   │   ├── AuthController.java       ├─ Authentication (login, register)
+│   │   │   ├── AdminController.java      ├─ Admin operations (users, stats)
+│   │   │   ├── CandidateController.java  ├─ Candidate profiles
+│   │   │   ├── RecruiterController.java  ├─ Recruiter profiles
+│   │   │   ├── AIController.java         ├─ AI/RAG endpoints (chat, analysis)
+│   │   │   ├── TaskController.java       ├─ Multi-agent task management
+│   │   │   └── HealthController.java     └─ Health check endpoint
 │   │   │
-│   │   ├── models/                   ← SQLAlchemy ORM entities
-│   │   │   ├── user.py, candidate.py, recruiter.py
-│   │   │   ├── ai.py                 ← AI conversations, messages, analyses
-│   │   │   ├── agent_tasks.py        ← Agent execution tracking
-│   │   │   └── company.py
+│   │   ├── entity/                   ← JPA Entity classes (20 total)
+│   │   │   ├── User.java, Candidate.java, Recruiter.java
+│   │   │   ├── Company.java, Project.java
+│   │   │   ├── AIConversation.java, AIMessage.java
+│   │   │   ├── AITask.java, TaskApproval.java
+│   │   │   ├── AIAnalysis.java, CodeDocument.java
+│   │   │   └── RepositoryIndexMetadata.java
 │   │   │
-│   │   ├── services/                 ← Business logic layer
-│   │   │   ├── auth_service.py       ├─ JWT, BCrypt, login/register
-│   │   │   ├── rag_service.py        ├─ RAG pipeline (search + LLM)
-│   │   │   ├── embedding_service.py  ├─ Vector embeddings with caching
-│   │   │   ├── llm_provider.py       ├─ LLM abstraction (OpenAI/mock)
-│   │   │   ├── code_chunker.py       ├─ AST-based code chunking
-│   │   │   ├── repository_indexer.py ├─ GitHub sync & indexing
-│   │   │   └── admin_service.py      └─ Admin operations
+│   │   ├── repository/               ← Spring Data JPA Repositories
+│   │   │   ├── UserRepository.java
+│   │   │   ├── CandidateRepository.java
+│   │   │   ├── RecruiterRepository.java
+│   │   │   ├── AdminRepository.java
+│   │   │   ├── AIConversationRepository.java
+│   │   │   ├── AITaskRepository.java
+│   │   │   └── CompanyRepository.java
 │   │   │
-│   │   ├── agents/                   ← Multi-agent AI system (Month 3)
-│   │   │   ├── graph/
-│   │   │   │   ├── workflow.py       ├─ LangGraph main workflow
-│   │   │   │   ├── state.py          ├─ Agent state models
-│   │   │   │   └── routing.py        └─ Conditional agent routing
-│   │   │   │
-│   │   │   ├── nodes/                ← 10 specialized agent implementations
-│   │   │   │   ├── planner.py
-│   │   │   │   ├── analyzer.py
-│   │   │   │   ├── coder.py
-│   │   │   │   ├── reviewer.py
-│   │   │   │   ├── tester.py
-│   │   │   │   ├── debugger.py
-│   │   │   │   ├── security.py
-│   │   │   │   ├── documentation.py
-│   │   │   │   ├── approval_gate.py  ← Human approval
-│   │   │   │   └── cleanup.py
-│   │   │   │
-│   │   │   ├── tools/
-│   │   │   │   ├── registry.py       ├─ Tool definitions
-│   │   │   │   ├── repository.py     ├─ Repository operations
-│   │   │   │   ├── patch.py          ├─ Code change proposals
-│   │   │   │   └── test.py           └─ Test execution
-│   │   │   │
-│   │   │   └── state/
-│   │   │       └── models.py         ← Agent state & message definitions
+│   │   ├── service/                 ← Business logic layer
+│   │   │   ├── AuthService.java          ├─ JWT, BCrypt, login/register
+│   │   │   ├── CandidateService.java     ├─ Candidate operations
+│   │   │   ├── RecruiterService.java     ├─ Recruiter operations
+│   │   │   ├── AdminService.java         ├─ Admin operations
+│   │   │   ├── AIService.java            ├─ AI chat & analysis
+│   │   │   └── TaskService.java          └─ Agent task management
 │   │   │
-│   │   ├── schemas/                  ← Pydantic request/response models
-│   │   ├── repositories/             ← Data access layer
-│   │   ├── db/
-│   │   │   ├── session.py            ├─ Database connection
-│   │   │   ├── vector_store.py       ├─ pgvector operations
-│   │   │   └── base.py               └─ Base model declaration
+│   │   ├── dto/                      ← Data Transfer Objects
+│   │   │   ├── request/
+│   │   │   │   ├── LoginRequest.java
+│   │   │   │   ├── RegisterCandidateRequest.java
+│   │   │   │   ├── CandidateProfileUpdateRequest.java
+│   │   │   │   ├── ChatRequest.java
+│   │   │   │   ├── CreateTaskRequest.java
+│   │   │   │   └── CreateCompanyRequest.java
+│   │   │   └── response/
+│   │   │       ├── LoginResponse.java
+│   │   │       ├── UserResponse.java
+│   │   │       ├── CandidateProfileResponse.java
+│   │   │       ├── ChatResponse.java
+│   │   │       ├── AITaskResponse.java
+│   │   │       └── PlatformStatsResponse.java
 │   │   │
-│   │   ├── core/
-│   │   │   ├── config.py             ├─ Environment configuration
-│   │   │   ├── security.py           ├─ JWT, password hashing
-│   │   │   └── dependencies.py       └─ FastAPI dependency injection
+│   │   ├── security/                 ← Spring Security & JWT
+│   │   │   ├── JWTProvider.java           ├─ JWT token generation/validation
+│   │   │   ├── JWTFilter.java            ├─ Servlet filter for JWT
+│   │   │   ├── UserDetailsServiceImpl.java├─ Spring Security user loader
+│   │   │   ├── SecurityConfig.java       ├─ Spring Security configuration
+│   │   │   └── SecurityUser.java         └─ Authentication principal
 │   │   │
-│   │   └── utils/                    ← Helper utilities
+│   │   ├── exception/                ← Exception handling
+│   │   │   ├── GlobalExceptionHandler.java
+│   │   │   ├── ResourceNotFoundException.java
+│   │   │   ├── DuplicateResourceException.java
+│   │   │   ├── BadCredentialsException.java
+│   │   │   ├── AccessDeniedException.java
+│   │   │   └── ErrorResponse.java
+│   │   │
+│   │   ├── config/                   ← Spring Boot configuration
+│   │   │   ├── AppProperties.java        ├─ @ConfigurationProperties
+│   │   │   ├── SecurityConfig.java       ├─ Spring Security beans
+│   │   │   ├── CorsConfig.java           ├─ CORS configuration
+│   │   │   ├── RedisConfig.java          ├─ Redis connection pool
+│   │   │   └── JpaConfig.java            └─ JPA/Hibernate configuration
+│   │   │
+│   │   └── util/                     ← Utility classes
 │   │
-│   ├── tests/                        ← pytest test suite
-│   │   ├── test_auth.py
-│   │   ├── test_ai_services.py
-│   │   └── test_candidate.py
+│   ├── src/test/java/com/codeforge/  ← JUnit 5 + Mockito tests
+│   │   ├── AuthServiceTest.java
+│   │   ├── AuthControllerTest.java
+│   │   ├── JWTProviderTest.java
+│   │   └── UserRepositoryTest.java
 │   │
-│   ├── alembic/                      ← Database migrations
-│   │   └── versions/
-│   │       ├── 001_month2_ai_features.py
-│   │       └── 002_month3_multi_agent_system.py
+│   ├── src/main/resources/
+│   │   ├── application.properties      ← Spring Boot configuration
+│   │   ├── application-test.properties ← Test configuration (H2 DB)
+│   │   └── db/migration/               ← Flyway migrations (optional)
 │   │
-│   ├── requirements.txt              ← Python dependencies
-│   ├── Dockerfile
-│   ├── pytest.ini
-│   ├── .env.example
-│   └── README.md
+│   ├── pom.xml                        ← Maven dependencies & plugins
+│   ├── Dockerfile                     ← Multi-stage Docker build
+│   ├── .env.example                   ← Environment template
+│   └── .dockerignore
 │
 ├── 📁 frontend/                      ← React TypeScript frontend
 │   ├── src/
@@ -267,24 +284,27 @@ CodeForge-AI/
 │   └── README.md
 │
 ├── 📁 docs/                          ← Complete documentation
-│   └── PROJECT_DOCUMENTATION.md      ← 400+ lines, all project info
+│   ├── PROJECT_DOCUMENTATION.md      ← Full project reference
+│   ├── BACKEND.md                    ← Backend setup & architecture
+│   └── TESTING.md                    ← Testing guide
 │
-└── 📄 CLEANUP_SUMMARY.md             ← Repository cleanup report
+└── 📄 docker-compose.yml             ← MSSQL, Redis, Spring Boot, React
 ```
 
 **Key Design Patterns:**
-- **Layered Architecture**: Routes → Services → Repositories → Models
-- **Pydantic Schemas**: Never return ORM models directly from API
-- **Dependency Injection**: FastAPI dependencies for auth, db sessions
+- **Layered Architecture**: Controller → Service → Repository → Entity
+- **DTO Pattern**: Never return JPA entities directly from API
+- **Dependency Injection**: Spring @Autowired for loose coupling
 - **Service Encapsulation**: Business logic isolated from HTTP layer
-- **Vector Database**: pgvector for semantic search (1536-dim embeddings)
+- **Spring Data JPA**: Type-safe queries without raw SQL
+- **Spring Security**: Method-level and endpoint-level authorization
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- **Python** 3.12+
+- **Java** 17+ (with Maven 3.9+)
 - **Node.js** 18+
-- **Docker** (recommended) or local PostgreSQL 16+
+- **Docker** (recommended) or local MSSQL Server 2022
 - **Git**
 
 ### Option 1: Docker (Recommended - 2 minutes)
@@ -306,10 +326,9 @@ docker-compose up --build
 
 **Access points:**
 - **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:8080
-- **API Docs**: http://localhost:8080/docs (Swagger)
-- **ReDoc**: http://localhost:8080/redoc
-- **Health**: http://localhost:8080/actuator/health
+- **Backend API**: http://localhost:8080/api
+- **API Docs**: http://localhost:8080/api/swagger-ui.html (Swagger)
+- **Health**: http://localhost:8080/api/actuator/health
 
 ### Option 2: Local Development
 
@@ -317,23 +336,20 @@ docker-compose up --build
 ```bash
 cd backend
 
-# Setup Python environment
-python -m venv venv
-source venv/bin/activate              # Linux/Mac
-# OR: .\venv\Scripts\Activate.ps1     # Windows
+# Prerequisites
+# - Java 17+ installed
+# - MSSQL Server 2022 running (or use Docker for DB only)
+# - Redis running (or use Docker)
 
-# Install dependencies
-pip install -r requirements.txt
+# Build with Maven
+mvn clean install
 
 # Configure
 cp .env.example .env
 # Edit .env with required variables
 
-# Run migrations
-alembic upgrade head
-
 # Start server
-python -m app.main
+java -jar target/codeforge-backend-1.0.0.jar
 ```
 
 **Frontend (in another terminal):**
@@ -378,11 +394,11 @@ Password: Admin123!
 
 ## 📚 Documentation
 
-- **[SETUP.md](SETUP.md)** - Detailed setup & configuration (15 pages)
+- **[docs/BACKEND.md](docs/BACKEND.md)** - Backend architecture, setup, API endpoints
+- **[docs/TESTING.md](docs/TESTING.md)** - Testing guide for backend & frontend
 - **[docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md)** - Complete reference (400+ lines)
-- **[backend/README.md](backend/README.md)** - Backend specifics
-- **[frontend/README.md](frontend/README.md)** - Frontend specifics
-- **API Docs**: http://localhost:8080/docs (interactive Swagger)
+- **API Docs**: http://localhost:8080/api/swagger-ui.html (interactive Swagger)
+- **Health Check**: http://localhost:8080/api/actuator/health
 
 ## 🔧 Configuration
 
@@ -391,22 +407,25 @@ Password: Admin123!
 **Backend** (`backend/.env`):
 ```env
 # Required
-DB_URL=postgresql://postgres:password@localhost:5432/recruitment_platform
-JWT_SECRET=your-secret-at-least-32-characters-long
-ADMIN_EMAIL=admin@example.com
-ADMIN_PASSWORD=Admin123!
+spring.datasource.url=jdbc:sqlserver://mssql:1433;databaseName=recruitment_platform;encrypt=true;trustServerCertificate=true;
+spring.datasource.username=sa
+spring.datasource.password=Admin@123456
+app.jwt.secret=your-secret-at-least-32-characters-long
+app.admin.email=admin@example.com
+app.admin.password=Admin123!
 
 # Optional - AI Features (OpenAI)
-LLM_PROVIDER=openai
-LLM_MODEL=gpt-4-turbo
-LLM_API_KEY=sk-xxx...
-EMBEDDING_MODEL=text-embedding-3-small
-EMBEDDING_API_KEY=sk-xxx...
+app.ai.llm.provider=openai
+app.ai.llm.model=gpt-4-turbo
+app.ai.llm.api-key=sk-xxx...
+app.ai.embedding.provider=openai
+app.ai.embedding.model=text-embedding-3-small
+app.ai.embedding.api-key=sk-xxx...
 
-# Optional - Infrastructure
-REDIS_URL=redis://localhost:6379
-PORT=8080
-CORS_ALLOWED_ORIGINS=http://localhost:5173
+# Infrastructure
+spring.redis.host=redis
+spring.redis.port=6379
+app.cors.allowed-origins=http://localhost:5173,http://localhost:3000
 ```
 
 **Frontend** (`frontend/.env.local`):
@@ -427,24 +446,19 @@ See `.env.example` files for all available options.
 | `/api/recruiters/me` | GET/PUT | Recruiter profile | ✅ RECRUITER |
 | `/api/admin/users` | GET | List all users | ✅ ADMIN |
 | `/api/admin/stats` | GET | Platform stats | ✅ ADMIN |
-| `/api/ai/chat` | POST | Chat with AI | ✅ ANY |
-| `/api/ai/explain` | POST | Explain code | ✅ ANY |
-| `/api/ai/bugs` | POST | Detect bugs | ✅ ANY |
-| `/api/ai/improve` | POST | Improve code | ✅ ANY |
-| `/api/ai/tests` | POST | Generate tests | ✅ ANY |
-| `/api/v1/projects/{id}/ai/tasks` | POST | Create AI task | ✅ ANY |
-| `/api/v1/projects/{id}/ai/tasks/{id}/approve` | POST | Approve task | ✅ ANY |
+| `/api/admin/companies` | GET/POST | Company management | ✅ ADMIN |
+| `/api/actuator/health` | GET | Health check | ❌ |
 
-**Full API documentation:** http://localhost:8080/docs
+**Full API documentation:** http://localhost:8080/api/swagger-ui.html
 
 ## 🧪 Testing
 
 **Backend:**
 ```bash
 cd backend
-pytest -v                    # Run all tests
-pytest --cov=app             # With coverage
-pytest tests/test_auth.py    # Specific file
+mvn test                              # Run all tests
+mvn test -Dtest=AuthServiceTest       # Specific test class
+mvn test -DargLine="-Duser.timezone=UTC"  # With timezone
 ```
 
 **Frontend:**
@@ -488,12 +502,13 @@ docker-compose restart backend
 
 ## 🚢 Deployment
 
-See [SETUP.md](SETUP.md) for production deployment guide including:
-- Gunicorn + Uvicorn configuration
-- Docker image building
+See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for production deployment guide including:
+- Docker image building and pushing
+- Kubernetes configuration
+- MSSQL database setup
+- Redis cache configuration
 - Environment secrets management
-- Database backup strategy
-- Monitoring and logging setup
+- Health monitoring and logging setup
 
 ## 🎯 Project Timeline
 
@@ -506,12 +521,12 @@ See [SETUP.md](SETUP.md) for production deployment guide including:
 
 ## 📈 System Stats
 
-- **156+ files** across backend, frontend, docs
-- **27 API endpoints** fully documented
-- **20 database tables** with proper relationships
-- **10 specialized AI agents** with task orchestration
-- **10,000+ lines** of production code
-- **60+ test points** for verification
+- **90+ Java classes** (entities, controllers, services, DTOs)
+- **20 JPA entities** (User, Candidate, Recruiter, Company, etc.)
+- **27 REST API endpoints** fully documented
+- **20 MSSQL database tables** with proper relationships
+- **4 test classes** (AuthService, AuthController, JWT, Repository)
+- **Spring Boot 3.2.3** with Java 17+
 - **0 secrets** in git (secure .gitignore)
 
 ## 🤝 Contributing
@@ -575,11 +590,11 @@ cat frontend/.env.local
 ## 🎓 Learning Resources
 
 This project demonstrates:
-- **Backend**: FastAPI async patterns, SQLAlchemy ORM, JWT auth, RAG pipelines, LangGraph orchestration
+- **Backend**: Spring Boot 3 async patterns, Spring Data JPA, JWT auth, Spring Security 6
 - **Frontend**: React hooks, TypeScript types, Axios interceptors, protected routes
-- **AI/ML**: Vector embeddings, semantic search, multi-agent systems, LLM integration
-- **DevOps**: Docker Compose, database migrations, environment management
-- **Security**: Password hashing, JWT tokens, CORS, role-based access control
+- **Database**: MSSQL Server, JPA entity mapping, Hibernate configuration
+- **DevOps**: Docker Compose, Maven builds, environment management
+- **Security**: Password hashing (BCrypt), JWT tokens, CORS, role-based access control
 
 ## 🚀 Getting Started Paths
 
@@ -589,34 +604,34 @@ This project demonstrates:
 2. Run docker-compose up
 3. Login with demo account
 4. Try the AI chat feature
-5. Read PROJECT_DOCUMENTATION.md for deeper dive
+5. Read docs/PROJECT_DOCUMENTATION.md for deeper dive
 ```
 
 **Backend developer?**
 ```
-1. Read backend/README.md
-2. Check app/services/* for business logic
-3. Review app/api/routes/* for endpoint patterns
-4. See tests/ for test examples
-5. Explore agents/ for multi-agent system
+1. Read docs/BACKEND.md
+2. Check src/main/java/com/codeforge/service/* for business logic
+3. Review src/main/java/com/codeforge/controller/* for endpoint patterns
+4. See src/test/java/* for test examples
+5. Explore pom.xml for dependency configuration
 ```
 
 **Frontend developer?**
 ```
 1. Read frontend/README.md
 2. Check src/pages/* for page structure
-3. Review src/services/api/* for API integration
+3. Review src/services/* for API integration
 4. See src/components/* for component patterns
 5. Explore src/types/* for TypeScript definitions
 ```
 
-**AI/ML focused?**
+**DevOps/Infrastructure?**
 ```
-1. See app/services/rag_service.py for RAG pipeline
-2. Check app/agents/ for multi-agent orchestration
-3. Review app/services/embedding_service.py for vectors
-4. See app/services/llm_provider.py for LLM abstraction
-5. Explore app/db/vector_store.py for pgvector operations
+1. Review docker-compose.yml for service orchestration
+2. Check backend/Dockerfile for multi-stage builds
+3. See backend/.env.example for configuration
+4. Review backend/pom.xml for Maven configuration
+5. Explore backend/.dockerignore for build optimization
 ```
 
 ---
