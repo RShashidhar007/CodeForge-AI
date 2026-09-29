@@ -1,0 +1,31 @@
+package com.codeforge.security;
+
+import com.codeforge.entity.User;
+import com.codeforge.exception.ResourceNotFoundException;
+import com.codeforge.repository.UserRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+/**
+ * Spring Security UserDetailsService implementation
+ * Loads user details from database for authentication
+ */
+@Service
+@RequiredArgsConstructor
+public class UserDetailsServiceImpl implements UserDetailsService {
+    
+    private final UserRepository userRepository;
+    
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        User user = userRepository.findByEmail(email)
+            .orElseThrow(() -> new UsernameNotFoundException(
+                "User not found with email: " + email
+            ));
+        
+        return new SecurityUser(user);
+    }
+}
