@@ -91,7 +91,11 @@ public class GlobalExceptionHandler {
     }
 
     /**
+<<<<<<< HEAD
      * Handle access denied (403 Forbidden) — our own AccessDeniedException.
+=======
+     * Handle access denied (403 Forbidden)
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
      */
     @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ErrorResponse> handleAccessDenied(
@@ -109,6 +113,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
+<<<<<<< HEAD
      * Handle access denied (403 Forbidden) — Spring Security's own exception,
      * thrown by @PreAuthorize/hasRole checks. Without this handler these were
      * falling through to handleGlobalException() and returning 500 instead
@@ -130,6 +135,8 @@ public class GlobalExceptionHandler {
     }
 
     /**
+=======
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
      * Handle validation errors (400 Bad Request)
      */
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -154,6 +161,7 @@ public class GlobalExceptionHandler {
     }
 
     /**
+<<<<<<< HEAD
      * Handle bad request-shaped input (e.g. an invalid enum value such as an
      * unknown taskType in CreateTaskRequest) as 400 instead of 500.
      */
@@ -173,6 +181,8 @@ public class GlobalExceptionHandler {
     }
 
     /**
+=======
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
      * Handle all other exceptions (500 Internal Server Error)
      */
     @ExceptionHandler(Exception.class)

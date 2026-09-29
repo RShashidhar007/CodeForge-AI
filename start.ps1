@@ -35,7 +35,11 @@ Write-Host "Starting services with docker-compose..." -ForegroundColor Yellow
 Write-Host ""
 
 # Start docker-compose
+<<<<<<< HEAD
 docker compose up --build
+=======
+docker-compose up --build
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
 
 # Check exit code
 if ($LASTEXITCODE -eq 0) {
@@ -43,6 +47,7 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "✅ Services started successfully!" -ForegroundColor Green
     Write-Host ""
     Write-Host "Access points:" -ForegroundColor Cyan
+<<<<<<< HEAD
     Write-Host "  • Frontend:   run  cd frontend; npm install; npm run dev  (then http://localhost:5173)" -ForegroundColor Green
     Write-Host "  • Backend:    http://localhost:8080" -ForegroundColor Green
     Write-Host "  • API:        http://localhost:8080/api" -ForegroundColor Green
@@ -51,6 +56,17 @@ if ($LASTEXITCODE -eq 0) {
     Write-Host "Accounts:" -ForegroundColor Cyan
     Write-Host "  • Admin:      admin@example.com / Admin123!" -ForegroundColor Green
     Write-Host "  • Candidates/recruiters: register from the Register page" -ForegroundColor Green
+=======
+    Write-Host "  • Frontend:   http://localhost:5173" -ForegroundColor Green
+    Write-Host "  • Backend:    http://localhost:8080" -ForegroundColor Green
+    Write-Host "  • API Docs:   http://localhost:8080/docs" -ForegroundColor Green
+    Write-Host "  • ReDoc:      http://localhost:8080/redoc" -ForegroundColor Green
+    Write-Host ""
+    Write-Host "Demo Accounts:" -ForegroundColor Cyan
+    Write-Host "  • Admin:      admin@example.com / Admin123!" -ForegroundColor Green
+    Write-Host "  • Candidate:  alice@student.com / Student123!" -ForegroundColor Green
+    Write-Host "  • Recruiter:  sarah@recruiter.com / Recruiter123!" -ForegroundColor Green
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
     Write-Host ""
     Write-Host "Press Ctrl+C to stop services" -ForegroundColor Yellow
 } else {

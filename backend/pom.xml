@@ -115,12 +115,15 @@
         </dependency>
 
         <dependency>
+<<<<<<< HEAD
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
+=======
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
@@ -165,8 +168,36 @@
                             <version>1.18.30</version>
                         </path>
                     </annotationProcessorPaths>
+<<<<<<< HEAD
                 </configuration>
             </plugin>
+=======
+                    <!-- Fork to avoid Java 27 issues with Lombok -->
+                    <fork>true</fork>
+                    <forkedPath>${java.home}</forkedPath>
+                    <!-- Suppress module warnings -->
+                    <compilerArgs>
+                        <arg>--add-opens</arg>
+                        <arg>jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
+                    </compilerArgs>
+                </configuration>
+            </plugin>
+
+            <!-- Assembly Plugin for building JAR -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
         </plugins>
     </build>
 

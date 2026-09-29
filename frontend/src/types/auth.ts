@@ -30,6 +30,11 @@ export interface RegisterRecruiterRequest {
   name: string;
   email: string;
   password: string;
+<<<<<<< HEAD
   position?: string;
   phone?: string;
+=======
+  designation?: string;
+  companyName?: string;
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
 }

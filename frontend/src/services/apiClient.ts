@@ -69,6 +69,7 @@ export function extractErrorMessage(error: unknown): string {
   return "An unexpected error occurred.";
 }
 
+<<<<<<< HEAD
 // The Spring backend serializes several multi-word response fields as
 // snake_case (e.g. token_type, user_id, total_users) while the UI types use
 // camelCase. Normalize successful JSON responses in one place.
@@ -91,6 +92,8 @@ apiClient.interceptors.response.use((response) => {
   return response;
 });
 
+=======
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
 // Response interceptor: on a 401 anywhere in the app (expired/invalid JWT),
 // clear the stored token so the UI falls back to a logged-out state instead
 // of silently retrying with a dead token forever.

@@ -28,5 +28,13 @@ COPY --from=builder /app/target/codeforge-backend-*.jar app.jar
 # Expose port
 EXPOSE 8080
 
+<<<<<<< HEAD
+=======
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=40s --retries=3 \
+  CMD java -cp app.jar -Dspring.config.location=classpath:/application.properties \
+    org.springframework.boot.loader.JarLauncher health || exit 1
+
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
 # Run application
 ENTRYPOINT ["java", "-jar", "app.jar"]

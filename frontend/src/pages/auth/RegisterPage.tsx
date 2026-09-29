@@ -14,7 +14,12 @@ export function RegisterPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+<<<<<<< HEAD
   const [position, setPosition] = useState("");
+=======
+  const [designation, setDesignation] = useState("");
+  const [companyName, setCompanyName] = useState("");
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
 
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
@@ -33,7 +38,12 @@ export function RegisterPage() {
           name,
           email,
           password,
+<<<<<<< HEAD
           position: position || undefined,
+=======
+          designation: designation || undefined,
+          companyName: companyName || undefined,
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
         });
       }
       setSuccess("Account created! Redirecting to login...");
@@ -103,8 +113,18 @@ export function RegisterPage() {
           {role === "RECRUITER" && (
             <>
               <div className="form-group">
+<<<<<<< HEAD
                 <label htmlFor="position">Position (optional)</label>
                 <input id="position" value={position} onChange={(e) => setPosition(e.target.value)} />
+=======
+                <label htmlFor="designation">Designation (optional)</label>
+                <input id="designation" value={designation} onChange={(e) => setDesignation(e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label htmlFor="companyName">Company name (optional)</label>
+                <input id="companyName" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+                <p className="form-hint">Must already exist in the system. You can add this later from your profile.</p>
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
               </div>
             </>
           )}

@@ -14,8 +14,13 @@ export function RecruiterProfilePage() {
   const [success, setSuccess] = useState<string | null>(null);
 
   const [phone, setPhone] = useState("");
+<<<<<<< HEAD
   const [position, setPosition] = useState("");
   const [bio, setBio] = useState("");
+=======
+  const [designation, setDesignation] = useState("");
+  const [companyName, setCompanyName] = useState("");
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
 
   useEffect(() => {
     recruiterService
@@ -23,8 +28,13 @@ export function RecruiterProfilePage() {
       .then((data) => {
         setProfile(data);
         setPhone(data.phone ?? "");
+<<<<<<< HEAD
         setPosition(data.position ?? "");
         setBio(data.bio ?? "");
+=======
+        setDesignation(data.designation ?? "");
+        setCompanyName(data.company?.name ?? "");
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
       })
       .catch((err) => setError(extractErrorMessage(err)))
       .finally(() => setIsLoading(false));
@@ -36,7 +46,11 @@ export function RecruiterProfilePage() {
     setSuccess(null);
     setIsSaving(true);
     try {
+<<<<<<< HEAD
       const updated = await recruiterService.updateMyProfile({ phone, position, bio });
+=======
+      const updated = await recruiterService.updateMyProfile({ phone, designation, companyName });
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
       setProfile(updated);
       setSuccess("Profile updated successfully.");
     } catch (err) {
@@ -66,12 +80,28 @@ export function RecruiterProfilePage() {
 
       <div className="card">
         <h2>Company</h2>
+<<<<<<< HEAD
         {profile?.companyName ? (
           <p>
             <strong>{profile.companyName}</strong>
           </p>
         ) : (
           <p className="form-hint">No company linked to this account yet.</p>
+=======
+        {profile?.company ? (
+          <p>
+            <strong>{profile.company.name}</strong>
+            {profile.company.location && <> &middot; {profile.company.location}</>}
+            <br />
+            {profile.company.website && (
+              <a href={profile.company.website} target="_blank" rel="noreferrer">
+                {profile.company.website}
+              </a>
+            )}
+          </p>
+        ) : (
+          <p className="form-hint">No company linked yet. Add a company name below (it must already exist -- ask an admin to create it).</p>
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
         )}
       </div>
 
@@ -83,12 +113,21 @@ export function RecruiterProfilePage() {
             <input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
           </div>
           <div className="form-group">
+<<<<<<< HEAD
             <label htmlFor="position">Position</label>
             <input id="position" value={position} onChange={(e) => setPosition(e.target.value)} />
           </div>
           <div className="form-group">
             <label htmlFor="bio">Bio</label>
             <textarea id="bio" rows={3} value={bio} onChange={(e) => setBio(e.target.value)} />
+=======
+            <label htmlFor="designation">Designation</label>
+            <input id="designation" value={designation} onChange={(e) => setDesignation(e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label htmlFor="companyName">Company name</label>
+            <input id="companyName" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
           </div>
           <button className="btn btn-primary" type="submit" disabled={isSaving}>
             {isSaving ? "Saving..." : "Save changes"}

@@ -40,7 +40,11 @@ export function AdminDashboard() {
             <div className="label">Recruiters</div>
           </div>
           <div className="stat-tile">
+<<<<<<< HEAD
             <div className="value">{stats.totalUsers - stats.totalCandidates - stats.totalRecruiters}</div>
+=======
+            <div className="value">{stats.totalAdmins}</div>
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
             <div className="label">Admins</div>
           </div>
           <div className="stat-tile">

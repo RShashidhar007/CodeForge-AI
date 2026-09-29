@@ -4,6 +4,7 @@ import { Send, Loader, AlertCircle, ChevronDown, MessageSquare } from 'lucide-re
 import { aiService } from '../../services/api/aiService';
 import './AIPage.css';
 
+<<<<<<< HEAD
 interface Source {
   file: string;
   startLine: number;
@@ -16,12 +17,28 @@ interface Message {
   content: string;
   sources?: Source[];
   createdAt?: string;
+=======
+interface Message {
+  role: 'user' | 'assistant';
+  content: string;
+  sources?: Array<{
+    file: string;
+    start_line: number;
+    end_line: number;
+    symbol?: string;
+  }>;
+  created_at?: string;
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
 }
 
 interface Conversation {
   id: number;
   title: string;
+<<<<<<< HEAD
   createdAt: string;
+=======
+  created_at: string;
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
 }
 
 export const AIPage: React.FC = () => {
@@ -42,6 +59,7 @@ export const AIPage: React.FC = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
+<<<<<<< HEAD
   // The backend only returns the latest answer for a conversation (not the
   // full message list), so threads are cached client-side per conversation.
   const threadsRef = useRef<Record<number, Message[]>>({});
@@ -50,6 +68,29 @@ export const AIPage: React.FC = () => {
     setConversationId(id);
     setMessages(threadsRef.current[id] ?? []);
     setError(null);
+=======
+  // Load conversation history when conversation changes
+  useEffect(() => {
+    if (conversationId) {
+      loadConversationHistory();
+    }
+  }, [conversationId]);
+
+  const loadConversationHistory = async () => {
+    if (!conversationId || !projectIdNum) return;
+
+    try {
+      const response = await aiService.getConversationHistory(
+        projectIdNum,
+        conversationId
+      );
+      setMessages(response.messages || []);
+      setError(null);
+    } catch (err) {
+      console.error('Failed to load conversation:', err);
+      setError('Failed to load conversation history');
+    }
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
   };
 
   const handleSendMessage = async (e: React.FormEvent) => {
@@ -70,6 +111,7 @@ export const AIPage: React.FC = () => {
     try {
       const result = await aiService.chat(projectIdNum, {
         question: input,
+<<<<<<< HEAD
         conversationId: conversationId || undefined,
         topK: 10,
       });
@@ -89,6 +131,15 @@ export const AIPage: React.FC = () => {
                 },
               ]
         );
+=======
+        conversation_id: conversationId || undefined,
+        top_k: 10,
+      });
+
+      // Set conversation ID from response
+      if (result.conversation_id) {
+        setConversationId(result.conversation_id);
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
       }
 
       // Add assistant message
@@ -96,6 +147,7 @@ export const AIPage: React.FC = () => {
         role: 'assistant',
         content: result.answer,
         sources: result.sources,
+<<<<<<< HEAD
         createdAt: new Date().toISOString(),
       };
 
@@ -104,6 +156,12 @@ export const AIPage: React.FC = () => {
         if (result.conversationId) threadsRef.current[result.conversationId] = next;
         return next;
       });
+=======
+        created_at: new Date().toISOString(),
+      };
+
+      setMessages((prev) => [...prev, assistantMessage]);
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'Failed to send message';
       setError(errorMsg);
@@ -114,10 +172,17 @@ export const AIPage: React.FC = () => {
     }
   };
 
+<<<<<<< HEAD
   const handleSourceClick = (source?: Source) => {
     if (source) {
       // TODO: Navigate to file editor with line numbers
       console.log('Opening file:', source.file, 'at lines', source.startLine, '-', source.endLine);
+=======
+  const handleSourceClick = (source: Message['sources']?.[0]) => {
+    if (source) {
+      // TODO: Navigate to file editor with line numbers
+      console.log('Opening file:', source.file, 'at lines', source.start_line, '-', source.end_line);
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
     }
   };
 
@@ -148,11 +213,19 @@ export const AIPage: React.FC = () => {
                 className={`conversation-item ${
                   conversationId === conv.id ? 'active' : ''
                 }`}
+<<<<<<< HEAD
                 onClick={() => selectConversation(conv.id)}
               >
                 <span className="conv-title">{conv.title}</span>
                 <span className="conv-date">
                   {new Date(conv.createdAt).toLocaleDateString()}
+=======
+                onClick={() => setConversationId(conv.id)}
+              >
+                <span className="conv-title">{conv.title}</span>
+                <span className="conv-date">
+                  {new Date(conv.created_at).toLocaleDateString()}
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
                 </span>
               </button>
             ))
@@ -175,7 +248,11 @@ export const AIPage: React.FC = () => {
       <div className="ai-main">
         <div className="ai-header">
           <h1>🤖 AI Code Assistant</h1>
+<<<<<<< HEAD
           <p>Ask questions about your codebase. Answers are generated from the indexed repository context.</p>
+=======
+          <p>Ask questions about your codebase. Answers are grounded in your actual code.</p>
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
         </div>
 
         {error && (
@@ -227,11 +304,19 @@ export const AIPage: React.FC = () => {
                           key={i}
                           className="source-link"
                           onClick={() => handleSourceClick(source)}
+<<<<<<< HEAD
                           title={`${source.file}:${source.startLine}-${source.endLine}`}
                         >
                           <span className="source-file">{source.file}</span>
                           <span className="source-lines">
                             {source.startLine}-{source.endLine}
+=======
+                          title={`${source.file}:${source.start_line}-${source.end_line}`}
+                        >
+                          <span className="source-file">{source.file}</span>
+                          <span className="source-lines">
+                            {source.start_line}-{source.end_line}
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
                           </span>
                           {source.symbol && (
                             <span className="source-symbol">{source.symbol}</span>

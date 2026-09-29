@@ -4,7 +4,10 @@ import com.codeforge.entity.User;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+<<<<<<< HEAD
 import org.springframework.test.context.ActiveProfiles;
+=======
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.Optional;
@@ -15,7 +18,10 @@ import static org.junit.jupiter.api.Assertions.*;
  * Integration tests for UserRepository
  */
 @DataJpaTest
+<<<<<<< HEAD
 @ActiveProfiles("test")
+=======
+>>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
 class UserRepositoryTest {
     
     @Autowired
