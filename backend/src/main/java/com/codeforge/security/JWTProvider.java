@@ -5,8 +5,12 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.codeforge.config.AppProperties;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
@@ -20,6 +24,14 @@ import java.util.Date;
 public class JWTProvider {
     
     private final AppProperties appProperties;
+
+    private JWTBlacklistService jwtBlacklistService;
+
+    @Autowired
+    @Lazy
+    public void setJwtBlacklistService(JWTBlacklistService jwtBlacklistService) {
+        this.jwtBlacklistService = jwtBlacklistService;
+    }
     
     private Algorithm getAlgorithm() {
         byte[] keyBytes = appProperties.getJwt().getSecret().getBytes(StandardCharsets.UTF_8);
@@ -101,11 +113,25 @@ public class JWTProvider {
             return new Date(0);
         }
     }
+
+    /**
+     * Extract JWT token from Authorization header of the request
+     */
+    public String extractTokenFromRequest(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
     
     /**
-     * Validate token
+     * Validate token — checks blacklist first, then signature and expiry
      */
     public Boolean validateToken(String token) {
+        if (jwtBlacklistService != null && jwtBlacklistService.isBlacklisted(token)) {
+            return false;
+        }
         try {
             JWT.require(getAlgorithm()).build().verify(token);
             return !isTokenExpired(token);
@@ -114,4 +140,3 @@ public class JWTProvider {
         }
     }
 }
-

@@ -1,6 +1,7 @@
 package com.codeforge.config;
 
 import com.codeforge.security.JWTFilter;
+import com.codeforge.security.RateLimitingFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,6 +28,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JWTFilter jwtFilter;
+    private final RateLimitingFilter rateLimitingFilter;
 
     /**
      * Password encoder using BCrypt
@@ -68,6 +70,7 @@ public class SecurityConfig {
                 // AI endpoints (any authenticated user) and everything else
                 .anyRequest().authenticated()
             )
+            .addFilterBefore(rateLimitingFilter, JWTFilter.class)
             .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
