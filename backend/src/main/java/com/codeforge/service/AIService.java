@@ -16,6 +16,7 @@ import com.codeforge.repository.AIMessageRepository;
 import com.codeforge.repository.CodeChunkRepository;
 import com.codeforge.repository.ProjectRepository;
 import com.codeforge.repository.RepositoryIndexMetadataRepository;
+import com.codeforge.service.ai.LLMProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,6 +37,7 @@ public class AIService {
     private final AIMessageRepository messageRepository;
     private final CodeChunkRepository codeChunkRepository;
     private final RepositoryIndexMetadataRepository indexMetadataRepository;
+    private final LLMProvider llmProvider;
     
     /**
      * Chat with AI about project code
@@ -82,7 +84,7 @@ public class AIService {
         
         // For now, return mock response
         // TODO: Integrate with LLM provider
-        String answer = "This is a mock response to: " + request.getQuestion();
+        String answer = llmProvider.chat(request.getQuestion(), context.toString());
         
         // Save assistant message
         AIMessage assistantMessage = AIMessage.builder()
@@ -146,8 +148,7 @@ public class AIService {
             .orElseThrow(() -> ResourceNotFoundException.notFound("Project", "id", projectId));
         
         // TODO: Integrate with LLM provider
-        String explanation = "Mock explanation for code from " + request.getFilepath() + 
-                           " lines " + request.getStartLine() + "-" + request.getEndLine();
+        String explanation = llmProvider.explainCode(request.getCode() != null ? request.getCode() : "", request.getLanguage() != null ? request.getLanguage() : "unknown");
         
         return CodeAnalysisResponse.builder()
             .explanation(explanation)
@@ -163,7 +164,7 @@ public class AIService {
             .orElseThrow(() -> ResourceNotFoundException.notFound("Project", "id", projectId));
         
         // TODO: Integrate with LLM provider
-        String analysis = "Mock bug detection for code from " + request.getFilepath();
+        String analysis = llmProvider.detectBugs(request.getCode() != null ? request.getCode() : "", request.getLanguage() != null ? request.getLanguage() : "unknown");
         
         return CodeAnalysisResponse.builder()
             .analysis(analysis)
@@ -179,7 +180,7 @@ public class AIService {
             .orElseThrow(() -> ResourceNotFoundException.notFound("Project", "id", projectId));
         
         // TODO: Integrate with LLM provider
-        String suggestions = "Mock suggestions for improving code from " + request.getFilepath();
+        String suggestions = llmProvider.improveCode(request.getCode() != null ? request.getCode() : "", request.getLanguage() != null ? request.getLanguage() : "unknown");
         
         return CodeAnalysisResponse.builder()
             .suggestions(suggestions)
@@ -195,7 +196,7 @@ public class AIService {
             .orElseThrow(() -> ResourceNotFoundException.notFound("Project", "id", projectId));
         
         // TODO: Integrate with LLM provider
-        String tests = "Mock tests generated for code from " + request.getFilepath();
+        String tests = llmProvider.generateTests(request.getCode() != null ? request.getCode() : "", request.getLanguage() != null ? request.getLanguage() : "unknown", request.getTestFramework() != null ? request.getTestFramework() : "junit");
         
         return CodeAnalysisResponse.builder()
             .tests(tests)

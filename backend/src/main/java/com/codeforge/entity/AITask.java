@@ -61,6 +61,15 @@ public class AITask {
     @Builder.Default
     private Set<TaskPatch> patches = new HashSet<>();
     
+    @Column
+    private LocalDateTime executionStartTime;
+
+    @Column
+    private LocalDateTime executionEndTime;
+
+    @Column(columnDefinition = "TEXT")
+    private String errorMessage;
+
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
