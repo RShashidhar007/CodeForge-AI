@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # CodeForge AI
 
 A recruitment platform with role-based access (Candidate / Recruiter / Admin) and an AI code-intelligence module (scaffold).
@@ -82,71 +81,6 @@ cd frontend && npm run build && npm run lint
 
 ## Notes on the JSON contract
 The backend emits some fields in `snake_case` (e.g. `token_type`, `user_id`). The frontend converts response keys to `camelCase` in a single Axios interceptor (`frontend/src/services/apiClient.ts`); request bodies are `camelCase`.
-=======
-# CodeForge AI - AI-Powered Recruitment & Code Intelligence Platform
-
-[![Status](https://img.shields.io/badge/Status-Production%20Ready-brightgreen)]()
-[![Java](https://img.shields.io/badge/Java-17%2B-red)]()
-[![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.2.3-brightgreen)]()
-[![React](https://img.shields.io/badge/React-19-blue)]()
-[![MSSQL](https://img.shields.io/badge/MSSQL%20Server-2022-blue)]()
-[![License](https://img.shields.io/badge/License-MIT-green)]()
-
-> **An AI-powered platform for intelligent recruitment and code analysis** combining secure authentication, semantic code search, and multi-agent AI software engineering.
-
-## 🎯 What is CodeForge AI?
-
-CodeForge AI transforms technical recruitment by combining:
-
-- **Secure Multi-Role Platform** - Role-based authentication for candidates, recruiters, and admins
-- **AI Code Intelligence** - Semantic search, analysis, and explanation of codebases via RAG + LLM
-- **Multi-Agent System** - 10 specialized AI agents (planner, coder, reviewer, tester, debugger, security, etc.)
-- **Conversational Debugging** - Ask questions about code, get AI-powered explanations with citations
-- **Safe Automation** - Human approval gates before any code modifications
-
-**Why?** Technical hiring is slow and inconsistent. CodeForge AI accelerates the pipeline with:
-- Automated code analysis for better candidate screening
-- Instant semantic search across entire repositories
-- AI-powered code review and improvement suggestions
-- Conversational debugging for faster troubleshooting
-
-## ✨ Features
-
-### Month 1: Secure Foundation ✅
-- Multi-role authentication (Candidate, Recruiter, Admin)
-- JWT-based stateless authentication with BCrypt
-- Profile management with ownership enforcement
-- Admin dashboard and user management
-- Company directory management
-
-### Month 2: AI Code Intelligence ✅
-- **Semantic Code Search** - Natural language queries against entire codebases
-- **Repository Indexing** - Automatic GitHub sync with incremental updates
-- **Vector Embeddings** - pgvector + OpenAI embeddings (1536-dim)
-- **RAG Pipeline** - Retrieval-Augmented Generation for context-aware responses
-- **Code Analysis** - AI-powered explanation, bug detection, improvements, test generation
-- **Conversation History** - Multi-turn chat with citations to source code
-- **Intelligent Chunking** - AST-based code segmentation for Python, JavaScript, Java
-
-### Month 3: Multi-Agent AI System ✅
-- **10 Specialized Agents**: Planner, Analyzer, Coder, Reviewer, Tester, Debugger, Security, Documentation, Approval Gate, Cleanup
-- **LangGraph Orchestration** - Conditional routing and state management
-- **Workflow Engine** - Task-driven execution with human approval gates
-- **Patch Management** - Safe change proposals and validation
-- **Execution History** - Complete audit trail of all AI operations
-- **Permission Model** - Granular tool access and repository permissions
-
-## 🛠 Technology Stack
-
-| Component | Technology | Version |
-|-----------|-----------|---------|
-| **Backend** | Spring Boot | 3.2.3 |
-| **Language** | Java | 17+ |
-| **Framework** | Spring Framework 6 | Latest |
-| **Database** | MSSQL Server | 2022+ |
-| **ORM** | Spring Data JPA + Hibernate | 6.4.4 |
-| **Cache** | Redis | 7+ |
-| **Authentication** | Auth0 JWT | 4.4.0 |
 | **Password Hashing** | BCrypt | - |
 | **Build Tool** | Maven | 3.9+ |
 | **AI/LLM** | OpenAI API | GPT-4 Turbo |
@@ -739,10 +673,8 @@ curl http://localhost:8080/docs
 # Check database
 docker-compose exec postgres psql -U postgres -d recruitment_platform
 ```
-
 ---
 
 **Made with ❤️ for better technical recruitment**
 
 **Status**: ✅ Production-Ready | **Version**: 1.0.0 | **Last Updated**: September 2026
->>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8

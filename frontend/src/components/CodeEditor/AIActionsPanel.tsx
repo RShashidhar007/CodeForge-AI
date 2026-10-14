@@ -57,13 +57,8 @@ export const AIActionsPanel: React.FC<AIActionsPanelProps> = ({
           response = await aiService.explainCode(projectId, {
             code: selectedCode,
             filepath,
-<<<<<<< HEAD
             startLine: startLine,
             endLine: endLine,
-=======
-            start_line: startLine,
-            end_line: endLine,
->>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
             language,
           });
           setResult(response.explanation);
@@ -73,13 +68,8 @@ export const AIActionsPanel: React.FC<AIActionsPanelProps> = ({
           response = await aiService.detectBugs(projectId, {
             code: selectedCode,
             filepath,
-<<<<<<< HEAD
             startLine: startLine,
             endLine: endLine,
-=======
-            start_line: startLine,
-            end_line: endLine,
->>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
             language,
           });
           setResult(response.analysis);
@@ -89,13 +79,8 @@ export const AIActionsPanel: React.FC<AIActionsPanelProps> = ({
           response = await aiService.improveCode(projectId, {
             code: selectedCode,
             filepath,
-<<<<<<< HEAD
             startLine: startLine,
             endLine: endLine,
-=======
-            start_line: startLine,
-            end_line: endLine,
->>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
             language,
           });
           setResult(response.suggestions);
@@ -105,13 +90,8 @@ export const AIActionsPanel: React.FC<AIActionsPanelProps> = ({
           response = await aiService.generateTests(projectId, {
             code: selectedCode,
             filepath,
-<<<<<<< HEAD
             startLine: startLine,
             endLine: endLine,
-=======
-            start_line: startLine,
-            end_line: endLine,
->>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
             language,
           });
           setResult(response.tests);
@@ -257,17 +237,10 @@ export const AIActionsPanel: React.FC<AIActionsPanelProps> = ({
                 }
 
                 // Lists
-<<<<<<< HEAD
                 if (line.match(/^[\d*-]\.\s/) || line.startsWith('- ')) {
                   return (
                     <li key={i} className="result-list-item">
                       {line.replace(/^[\d*.\s-]+/, '')}
-=======
-                if (line.match(/^[\d\-\*]\.\s/) || line.startsWith('- ')) {
-                  return (
-                    <li key={i} className="result-list-item">
-                      {line.replace(/^[\d\-\*\.\s]+/, '')}
->>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
                     </li>
                   );
                 }

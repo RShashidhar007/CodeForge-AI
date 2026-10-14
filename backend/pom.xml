@@ -92,6 +92,19 @@
             <artifactId>spring-boot-starter-webflux</artifactId>
         </dependency>
 
+        <!-- Flyway for Database Migrations -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+            <version>9.22.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-sqlserver</artifactId>
+            <version>9.22.3</version>
+        </dependency>
+
         <!-- Configuration Processor for @ConfigurationProperties -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -115,15 +128,12 @@
         </dependency>
 
         <dependency>
-<<<<<<< HEAD
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-=======
->>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
             <groupId>org.springframework.security</groupId>
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
@@ -168,10 +178,6 @@
                             <version>1.18.30</version>
                         </path>
                     </annotationProcessorPaths>
-<<<<<<< HEAD
-                </configuration>
-            </plugin>
-=======
                     <!-- Fork to avoid Java 27 issues with Lombok -->
                     <fork>true</fork>
                     <forkedPath>${java.home}</forkedPath>
@@ -197,7 +203,6 @@
                     </execution>
                 </executions>
             </plugin>
->>>>>>> 019e83b0908bbf90a27da40578fca8faea6942c8
         </plugins>
     </build>
 
