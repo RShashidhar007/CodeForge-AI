@@ -39,4 +39,13 @@ public class AITaskResponse {
     
     @JsonProperty("updated_at")
     private LocalDateTime updatedAt;
+
+    @JsonProperty("execution_start_time")
+    private LocalDateTime executionStartTime;
+
+    @JsonProperty("execution_end_time")
+    private LocalDateTime executionEndTime;
+
+    @JsonProperty("error_message")
+    private String errorMessage;
 }

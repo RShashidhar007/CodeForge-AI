@@ -164,6 +164,9 @@ public class TaskService {
             .result(task.getResult())
             .createdAt(task.getCreatedAt())
             .updatedAt(task.getUpdatedAt())
+            .executionStartTime(task.getExecutionStartTime())
+            .executionEndTime(task.getExecutionEndTime())
+            .errorMessage(task.getErrorMessage())
             .build();
     }
 }
