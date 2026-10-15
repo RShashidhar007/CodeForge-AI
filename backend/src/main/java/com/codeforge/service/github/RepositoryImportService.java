@@ -78,7 +78,7 @@ public class RepositoryImportService {
                         project, filePath, content
                     );
                     
-                    List<CodeChunk> chunks = codeChunkRepository.findByDocument(document);
+                    List<CodeChunk> chunks = codeChunkRepository.findByCodeDocument(document);
                     allChunks.addAll(chunks);
                     
                     processedFiles++;

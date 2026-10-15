@@ -12,15 +12,15 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "agent_executions", indexes = {
-    @Index(columnList = "task_id"),
-    @Index(columnList = "agent_name")
+    @Index(columnList = "ai_task_id"),
+    @Index(columnList = "agent_id")
 })
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"task"})
-@ToString(exclude = {"task"})
+@EqualsAndHashCode(exclude = {"aiTask"})
+@ToString(exclude = {"aiTask"})
 public class AgentExecution {
     
     @Id
@@ -28,35 +28,27 @@ public class AgentExecution {
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_id", nullable = false)
-    private AITask task;
+    @JoinColumn(name = "ai_task_id")
+    private AITask aiTask;
     
-    @Column(length = 100, nullable = false)
-    private String agentName;
-    
-    @Column(columnDefinition = "TEXT")
-    private String input;
-    
-    @Column(columnDefinition = "TEXT")
-    private String output;
+    @Column(length = 255)
+    private String agentId;
     
     @Column(length = 50)
-    @Enumerated(EnumType.STRING)
-    private ExecutionStatus status; // PENDING, RUNNING, SUCCESS, FAILED
-    
-    @Column(columnDefinition = "TEXT")
-    private String errorMessage;
+    private String status;
     
     @Column
-    private Integer sequenceOrder;
+    private LocalDateTime startTime;
+    
+    @Column
+    private LocalDateTime endTime;
+    
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String resultSummary;
     
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
     
     public enum ExecutionStatus {
         PENDING, RUNNING, SUCCESS, FAILED

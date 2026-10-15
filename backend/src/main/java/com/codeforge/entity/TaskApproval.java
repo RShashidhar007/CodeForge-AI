@@ -11,37 +11,40 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "task_approvals", indexes = {
-    @Index(columnList = "task_id")
+    @Index(columnList = "ai_task_id")
 })
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"task"})
-@ToString(exclude = {"task"})
+@EqualsAndHashCode(exclude = {"aiTask", "approvedByUser"})
+@ToString(exclude = {"aiTask", "approvedByUser"})
 public class TaskApproval {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_id", nullable = false)
-    private AITask task;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ai_task_id", nullable = false)
+    private AITask aiTask;
     
-    @Column(nullable = false)
-    private Long approverUserId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "approved_by_user_id")
+    private User approvedByUser;
     
     @Column(length = 50)
-    @Enumerated(EnumType.STRING)
-    private ApprovalStatus status; // APPROVED, REJECTED
+    private String approvalStatus;
     
-    @Column(columnDefinition = "TEXT")
-    private String reason;
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String comments;
     
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
+    
+    @Column(nullable = false)
+    private LocalDateTime updatedAt;
     
     public enum ApprovalStatus {
         APPROVED, REJECTED

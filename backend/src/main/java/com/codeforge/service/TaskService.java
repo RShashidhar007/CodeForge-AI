@@ -5,8 +5,6 @@ import com.codeforge.dto.request.CreateTaskRequest;
 import com.codeforge.dto.response.AITaskResponse;
 import com.codeforge.dto.response.PageResponse;
 import com.codeforge.entity.AITask;
-import com.codeforge.entity.AITask.TaskStatus;
-import com.codeforge.entity.AITask.TaskType;
 import com.codeforge.entity.Project;
 import com.codeforge.entity.TaskApproval;
 import com.codeforge.exception.ResourceNotFoundException;
@@ -42,12 +40,9 @@ public class TaskService {
         
         AITask task = AITask.builder()
             .project(project)
-            .title(request.getTitle())
-            .description(request.getDescription())
-            .taskType(TaskType.valueOf(request.getTaskType()))
-            .status(TaskStatus.PENDING)
-            .selectedFiles(request.getSelectedFiles() != null ? 
-                String.join(",", request.getSelectedFiles()) : "")
+            .taskType(request.getTaskType())
+            .status("PENDING")
+            .inputData("")
             .build();
         
         task = taskRepository.save(task);
@@ -106,25 +101,23 @@ public class TaskService {
         }
         
         if (request.isApproved()) {
-            task.setStatus(TaskStatus.COMPLETED);
+            task.setStatus("COMPLETED");
             
             // Record approval
             TaskApproval approval = TaskApproval.builder()
-                .task(task)
-                .approverUserId(approverId)
-                .status(TaskApproval.ApprovalStatus.APPROVED)
-                .reason(request.getReason())
+                .aiTask(task)
+                .approvalStatus("APPROVED")
+                .comments(request.getReason())
                 .build();
             approvalRepository.save(approval);
         } else {
-            task.setStatus(TaskStatus.FAILED);
+            task.setStatus("FAILED");
             
             // Record rejection
             TaskApproval approval = TaskApproval.builder()
-                .task(task)
-                .approverUserId(approverId)
-                .status(TaskApproval.ApprovalStatus.REJECTED)
-                .reason(request.getReason())
+                .aiTask(task)
+                .approvalStatus("REJECTED")
+                .comments(request.getReason())
                 .build();
             approvalRepository.save(approval);
         }
@@ -146,7 +139,7 @@ public class TaskService {
             throw new ResourceNotFoundException("Task does not belong to this project");
         }
         
-        task.setStatus(TaskStatus.CANCELLED);
+        task.setStatus("CANCELLED");
         task = taskRepository.save(task);
         
         return mapToAITaskResponse(task);
@@ -155,13 +148,9 @@ public class TaskService {
     private AITaskResponse mapToAITaskResponse(AITask task) {
         return AITaskResponse.builder()
             .id(task.getId())
-            .projectId(task.getProject().getId())
-            .title(task.getTitle())
-            .description(task.getDescription())
-            .status(task.getStatus().name())
-            .taskType(task.getTaskType().name())
-            .selectedFiles(task.getSelectedFiles())
-            .result(task.getResult())
+            .projectId(task.getProject() != null ? task.getProject().getId() : null)
+            .status(task.getStatus())
+            .taskType(task.getTaskType())
             .createdAt(task.getCreatedAt())
             .updatedAt(task.getUpdatedAt())
             .executionStartTime(task.getExecutionStartTime())

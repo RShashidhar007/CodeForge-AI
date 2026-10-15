@@ -135,7 +135,7 @@ CREATE TABLE code_documents (
     created_at DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
     updated_at DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE SET NULL
+    FOREIGN KEY (file_id) REFERENCES files(id) ON DELETE NO ACTION
 );
 
 CREATE INDEX idx_code_documents_project_id ON code_documents(project_id);

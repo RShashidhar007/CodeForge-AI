@@ -69,12 +69,12 @@ public class AIService {
         messageRepository.save(userMessage);
         
         // Semantic search for relevant code chunks
-        List<CodeChunk> relevantChunks = codeChunkRepository.findByDocumentProjectId(projectId);
+        List<CodeChunk> relevantChunks = codeChunkRepository.findByCodeDocumentProjectId(projectId);
         
         // Build context from relevant chunks
         StringBuilder context = new StringBuilder();
         for (CodeChunk chunk : relevantChunks) {
-            context.append("File: ").append(chunk.getDocument().getFilePath())
+            context.append("File: ").append(chunk.getCodeDocument().getFilePath())
                 .append("\n")
                 .append("Lines ").append(chunk.getStartLine()).append("-").append(chunk.getEndLine())
                 .append("\n")
@@ -98,10 +98,10 @@ public class AIService {
         List<ChatResponse.SourceReference> sources = new ArrayList<>();
         for (CodeChunk chunk : relevantChunks.stream().limit(5).toList()) {
             sources.add(ChatResponse.SourceReference.builder()
-                .file(chunk.getDocument().getFilePath())
-                .startLine(chunk.getStartLine())
-                .endLine(chunk.getEndLine())
-                .symbol(chunk.getSymbol())
+                .file(chunk.getCodeDocument().getFilePath())
+                .startLine(chunk.getStartLine() != null ? chunk.getStartLine().intValue() : 0)
+                .endLine(chunk.getEndLine() != null ? chunk.getEndLine().intValue() : 0)
+                .symbol(chunk.getSymbolName())
                 .build());
         }
         
@@ -215,20 +215,24 @@ public class AIService {
         RepositoryIndexMetadata metadata = indexMetadataRepository.findByProjectId(projectId)
             .orElseGet(() -> RepositoryIndexMetadata.builder()
                 .project(project)
-                .totalFiles(0)
-                .indexedFiles(0)
-                .totalChunks(0)
-                .progress(0.0)
+                .totalFiles(0L)
+                .indexedFiles(0L)
+                .totalChunks(0L)
+                .status("pending")
                 .build());
         
+        // Calculate progress
+        double progress = metadata.getTotalFiles() > 0 ? 
+            (double) metadata.getIndexedFiles() / metadata.getTotalFiles() : 0.0;
+        
         return IndexStatusResponse.builder()
-            .status(metadata.getProgress() >= 1.0 ? "completed" : "processing")
-            .totalFiles(metadata.getTotalFiles())
-            .indexedFiles(metadata.getIndexedFiles())
-            .totalChunks(metadata.getTotalChunks())
-            .progress(metadata.getProgress())
+            .status(progress >= 1.0 ? "completed" : "processing")
+            .totalFiles(metadata.getTotalFiles() != null ? metadata.getTotalFiles().intValue() : 0)
+            .indexedFiles(metadata.getIndexedFiles() != null ? metadata.getIndexedFiles().intValue() : 0)
+            .totalChunks(metadata.getTotalChunks() != null ? metadata.getTotalChunks().intValue() : 0)
+            .progress(progress)
             .lastIndexedAt(metadata.getLastIndexedAt() != null ? metadata.getLastIndexedAt().toString() : null)
-            .lastError(metadata.getLastError())
+            .lastError(null)
             .build();
     }
 }

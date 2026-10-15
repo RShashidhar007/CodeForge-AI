@@ -78,7 +78,7 @@ public class CodeProcessingService {
         CodeDocument document = CodeDocument.builder()
             .project(project)
             .filePath(filePath)
-            .fullContent(content)
+            .content(content)
             .language(language)
             .build();
         document = codeDocumentRepository.save(document);
@@ -113,11 +113,11 @@ public class CodeProcessingService {
             String symbol = extractSymbol(chunkContent.toString(), document.getLanguage());
             
             CodeChunk chunk = CodeChunk.builder()
-                .document(document)
-                .startLine(startLine + 1) // 1-indexed
-                .endLine(endLine)
+                .codeDocument(document)
+                .startLine((long)(startLine + 1)) // 1-indexed
+                .endLine((long)endLine)
                 .content(chunkContent.toString())
-                .symbol(symbol)
+                .symbolName(symbol)
                 .build();
             
             chunks.add(chunk);

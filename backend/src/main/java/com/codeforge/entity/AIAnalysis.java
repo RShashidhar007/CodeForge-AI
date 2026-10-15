@@ -12,15 +12,15 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "ai_analyses", indexes = {
-    @Index(columnList = "project_id"),
+    @Index(columnList = "code_document_id"),
     @Index(columnList = "analysis_type")
 })
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"project"})
-@ToString(exclude = {"project"})
+@EqualsAndHashCode(exclude = {"codeDocument", "performedByUser"})
+@ToString(exclude = {"codeDocument", "performedByUser"})
 public class AIAnalysis {
     
     @Id
@@ -28,32 +28,25 @@ public class AIAnalysis {
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
-    private Project project;
+    @JoinColumn(name = "code_document_id")
+    private CodeDocument codeDocument;
     
-    @Column(length = 100, nullable = false)
-    @Enumerated(EnumType.STRING)
-    private AnalysisType analysisType; // EXPLAIN, BUGS, IMPROVE, TESTS
+    @Column(length = 100)
+    private String analysisType;
     
-    @Column(length = 500)
-    private String filePath;
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String analysisResult;
     
-    @Column(nullable = false)
-    private Integer startLine;
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String summary;
     
-    @Column(nullable = false)
-    private Integer endLine;
-    
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String result;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "performed_by_user_id")
+    private User performedByUser;
     
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
     
     public enum AnalysisType {
         EXPLAIN, BUGS, IMPROVE, TESTS

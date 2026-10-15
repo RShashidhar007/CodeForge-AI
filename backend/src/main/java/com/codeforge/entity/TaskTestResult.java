@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "task_test_results", indexes = {
-    @Index(columnList = "task_id")
+    @Index(columnList = "ai_task_id")
 })
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"task"})
-@ToString(exclude = {"task"})
+@EqualsAndHashCode(exclude = {"aiTask"})
+@ToString(exclude = {"aiTask"})
 public class TaskTestResult {
     
     @Id
@@ -26,30 +26,19 @@ public class TaskTestResult {
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_id", nullable = false)
-    private AITask task;
+    @JoinColumn(name = "ai_task_id", nullable = false)
+    private AITask aiTask;
+    
+    @Column(length = 500)
+    private String testName;
     
     @Column(length = 50)
-    @Enumerated(EnumType.STRING)
-    private TestStatus status; // PASSED, FAILED
+    private String status; // PASSED, FAILED, etc.
     
-    @Column(nullable = false)
-    private Integer testsRun;
-    
-    @Column(nullable = false)
-    private Integer testsPassed;
-    
-    @Column(nullable = false)
-    private Integer testsFailed;
-    
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String output;
     
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    
-    public enum TestStatus {
-        PASSED, FAILED
-    }
 }

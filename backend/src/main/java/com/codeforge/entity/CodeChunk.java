@@ -13,15 +13,15 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "code_chunks", indexes = {
-    @Index(columnList = "document_id"),
-    @Index(columnList = "start_line")
+    @Index(columnList = "code_document_id"),
+    @Index(columnList = "language")
 })
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"document"})
-@ToString(exclude = {"document"})
+@EqualsAndHashCode(exclude = {"codeDocument"})
+@ToString(exclude = {"codeDocument"})
 public class CodeChunk {
     
     @Id
@@ -29,32 +29,28 @@ public class CodeChunk {
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "document_id", nullable = false)
-    private CodeDocument document;
+    @JoinColumn(name = "code_document_id", nullable = false)
+    private CodeDocument codeDocument;
     
-    @Column(nullable = false)
-    private Integer startLine;
-    
-    @Column(nullable = false)
-    private Integer endLine;
-    
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Column(columnDefinition = "NVARCHAR(MAX)", nullable = false)
     private String content;
     
-    @Column(columnDefinition = "TEXT")
-    private String symbol;
+    @Column
+    private Long startLine;
     
-    @Column(columnDefinition = "TEXT")
-    private String embedding; // Stored as JSON array
+    @Column
+    private Long endLine;
     
-    @Column(length = 255)
-    private String vectorId;
+    @Column(length = 50)
+    private String language;
+    
+    @Column(length = 500)
+    private String symbolName;
+    
+    @Column(columnDefinition = "VARBINARY(MAX)")
+    private byte[] embedding;
     
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
 }

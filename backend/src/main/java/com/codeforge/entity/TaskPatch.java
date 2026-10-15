@@ -12,14 +12,14 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "task_patches", indexes = {
-    @Index(columnList = "task_id")
+    @Index(columnList = "ai_task_id")
 })
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"task"})
-@ToString(exclude = {"task"})
+@EqualsAndHashCode(exclude = {"aiTask"})
+@ToString(exclude = {"aiTask"})
 public class TaskPatch {
     
     @Id
@@ -27,28 +27,16 @@ public class TaskPatch {
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_id", nullable = false)
-    private AITask task;
+    @JoinColumn(name = "ai_task_id", nullable = false)
+    private AITask aiTask;
     
-    @Column(length = 500, nullable = false)
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String patchContent;
+    
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String filePath;
-    
-    @Column(columnDefinition = "TEXT", nullable = false)
-    private String patchContent; // Unified diff format
-    
-    @Column(length = 50)
-    @Enumerated(EnumType.STRING)
-    private PatchStatus status; // PENDING, APPROVED, REJECTED, APPLIED
     
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
-    
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime updatedAt;
-    
-    public enum PatchStatus {
-        PENDING, APPROVED, REJECTED, APPLIED
-    }
 }

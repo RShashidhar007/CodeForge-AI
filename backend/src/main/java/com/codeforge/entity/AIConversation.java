@@ -20,8 +20,8 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"project", "messages"})
-@ToString(exclude = {"project", "messages"})
+@EqualsAndHashCode(exclude = {"project", "user", "messages"})
+@ToString(exclude = {"project", "user", "messages"})
 public class AIConversation {
     
     @Id
@@ -32,8 +32,15 @@ public class AIConversation {
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
     
-    @Column(length = 255)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    
+    @Column(length = 500)
     private String title;
+    
+    @Column(columnDefinition = "TEXT")
+    private String contextSummary;
     
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default

@@ -109,13 +109,14 @@ public class GithubOAuthService {
             .orElseThrow(() -> ResourceNotFoundException.notFound("User", "id", userId));
         
         GithubToken githubToken = githubTokenRepository
-            .findByUserIdAndUsername(userId, username)
+            .findByUserId(userId)
+            .stream()
+            .findFirst()
             .orElse(GithubToken.builder()
                 .user(user)
-                .username(username)
                 .build());
         
-        githubToken.setToken(token);
+        githubToken.setAccessToken(token);
         GithubToken saved = githubTokenRepository.save(githubToken);
         
         log.info("Saved GitHub token for user {} and GitHub username {}", userId, username);

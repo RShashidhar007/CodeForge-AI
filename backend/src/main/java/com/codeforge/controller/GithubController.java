@@ -86,7 +86,7 @@ public class GithubController {
     public ResponseEntity<List<GithubRepositoryResponse>> listRepositories(@AuthenticationPrincipal SecurityUser currentUser) {
         GithubToken token = githubOAuthService.getGithubToken(currentUser.getUserId());
         
-        List<Map<String, Object>> repos = githubService.listRepositories(token.getToken());
+        List<Map<String, Object>> repos = githubService.listRepositories(token.getAccessToken());
         
         List<GithubRepositoryResponse> response = repos.stream()
             .map(repo -> GithubRepositoryResponse.builder()
@@ -118,7 +118,7 @@ public class GithubController {
         // Start async import
         repositoryImportService.importRepositoryAsync(
             request.getProjectId(),
-            token.getToken(),
+            token.getAccessToken(),
             request.getOwner(),
             request.getRepo()
         );

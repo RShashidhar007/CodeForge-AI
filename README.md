@@ -94,37 +94,37 @@ The backend emits some fields in `snake_case` (e.g. `token_type`, `user_id`). Th
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│                   React Frontend                     │
+│                   React Frontend                    │
 │              (TypeScript, Vite, Axios)              │
 └────────────────────────┬────────────────────────────┘
                          │ HTTPS/REST
-┌────────────────────────▼────────────────────────────┐
-│          Spring Boot 3.2.3 Backend (Java 17+)       │
+┌────────────────────────▼──────────────────────────┐
+│          Spring Boot 3.2.3 Backend (Java 17+)     │
 │  ┌─────────────────────────────────────────────┐  │
 │  │  27 REST API Endpoints (Spring MVC)         │  │
 │  │  - Auth (3), Candidates (2), Recruiters (2) │  │
 │  │  - Admin (5), AI/RAG (7), Tasks (5)         │  │
-│  │  - Health (1)                              │  │
+│  │  - Health (1)                               │  │
 │  └─────────────────────────────────────────────┘  │
 │  ┌─────────────────────────────────────────────┐  │
 │  │  Service Layer                              │  │
-│  │  - AuthService, CandidateService           │  │
-│  │  - RecruiterService, AdminService          │  │
-│  │  - AIService, TaskService                  │  │
+│  │  - AuthService, CandidateService            │  │
+│  │  - RecruiterService, AdminService           │  │
+│  │  - AIService, TaskService                   │  │
 │  └─────────────────────────────────────────────┘  │
 │  ┌─────────────────────────────────────────────┐  │
 │  │  Spring Data JPA + Hibernate 6.4.4          │  │
-│  │  - 20 Entity Classes (Users, Candidates...)│  │
-│  │  - 20 Repository Interfaces                │  │
-│  │  - Transaction Management                  │  │
+│  │  - 20 Entity Classes (Users, Candidates...) │  │
+│  │  - 20 Repository Interfaces                 │  │
+│  │  - Transaction Management                   │  │
 │  └─────────────────────────────────────────────┘  │
 │  ┌─────────────────────────────────────────────┐  │
 │  │  Spring Security 6.x                        │  │
-│  │  - JWT Authentication                      │  │
-│  │  - Role-Based Access Control               │  │
-│  │  - Method-Level Security                   │  │
+│  │  - JWT Authentication                       │  │
+│  │  - Role-Based Access Control                │  │
+│  │  - Method-Level Security                    │  │
 │  └─────────────────────────────────────────────┘  │
-└────────────────┬────────────────────┬──────────────┘
+└────────────────┬────────────────────┬─────────────┘
                  │                    │
     ┌────────────▼──────────┐  ┌──────▼─────────────┐
     │   MSSQL Server 2022   │  │    Redis 7+        │

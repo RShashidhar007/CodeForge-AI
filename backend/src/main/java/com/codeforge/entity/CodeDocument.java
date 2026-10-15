@@ -21,28 +21,41 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"project", "chunks"})
-@ToString(exclude = {"project", "chunks"})
+@EqualsAndHashCode(exclude = {"project", "file", "chunks"})
+@ToString(exclude = {"project", "file", "chunks"})
 public class CodeDocument {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(length = 500, nullable = false)
-    private String filePath;
-    
-    @Column(nullable = false)
-    private String fullContent;
-    
-    @Column(length = 50)
-    private String language;
-    
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "project_id", nullable = false)
     private Project project;
     
-    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "file_id")
+    private File file;
+    
+    @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
+    private String filePath;
+    
+    @Column(nullable = false, length = 255)
+    private String fileName;
+    
+    @Column(length = 50)
+    private String language;
+    
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String content;
+    
+    @Column(length = 64)
+    private String contentHash;
+    
+    @Column
+    private LocalDateTime indexedAt;
+    
+    @OneToMany(mappedBy = "codeDocument", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<CodeChunk> chunks = new HashSet<>();
     

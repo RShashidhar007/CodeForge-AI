@@ -21,8 +21,8 @@ import java.util.Set;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"project", "executions", "patches"})
-@ToString(exclude = {"project", "executions", "patches"})
+@EqualsAndHashCode(exclude = {"project", "user", "executions", "patches", "testResults", "approval"})
+@ToString(exclude = {"project", "user", "executions", "patches", "testResults", "approval"})
 public class AITask {
     
     @Id
@@ -30,36 +30,27 @@ public class AITask {
     private Long id;
     
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+    
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "project_id")
     private Project project;
     
-    @Column(length = 255, nullable = false)
-    private String title;
-    
-    @Column(columnDefinition = "TEXT")
-    private String description;
-    
     @Column(length = 100, nullable = false)
-    @Enumerated(EnumType.STRING)
-    private TaskStatus status; // PENDING, IN_PROGRESS, COMPLETED, FAILED, CANCELLED
+    private String taskType;
     
-    @Column(length = 50)
-    @Enumerated(EnumType.STRING)
-    private TaskType taskType; // CODE_ANALYSIS, REFACTORING, BUG_FIX, TEST_GENERATION
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String inputData;
     
-    @Column(columnDefinition = "TEXT")
-    private String selectedFiles; // JSON array of file paths
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String outputData;
     
-    @Column(columnDefinition = "TEXT")
-    private String result; // Task execution result
+    @Column(length = 50, nullable = false)
+    private String status; // PENDING, RUNNING, COMPLETED, FAILED
     
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private Set<AgentExecution> executions = new HashSet<>();
-    
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private Set<TaskPatch> patches = new HashSet<>();
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String errorMessage;
     
     @Column
     private LocalDateTime executionStartTime;
@@ -67,8 +58,23 @@ public class AITask {
     @Column
     private LocalDateTime executionEndTime;
 
-    @Column(columnDefinition = "TEXT")
-    private String errorMessage;
+    @Column(length = 255)
+    private String executedByAgentId;
+    
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<AgentExecution> executions = new HashSet<>();
+    
+    @OneToMany(mappedBy = "aiTask", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<TaskPatch> patches = new HashSet<>();
+    
+    @OneToMany(mappedBy = "aiTask", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private Set<TaskTestResult> testResults = new HashSet<>();
+    
+    @OneToOne(mappedBy = "aiTask", cascade = CascadeType.ALL, orphanRemoval = true)
+    private TaskApproval approval;
 
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
@@ -79,7 +85,7 @@ public class AITask {
     private LocalDateTime updatedAt;
     
     public enum TaskStatus {
-        PENDING, IN_PROGRESS, COMPLETED, FAILED, CANCELLED
+        PENDING, RUNNING, COMPLETED, FAILED
     }
     
     public enum TaskType {

@@ -21,4 +21,6 @@ public interface AITaskRepository extends JpaRepository<AITask, Long> {
     Page<AITask> findByProjectIdAndStatus(Long projectId, TaskStatus status, Pageable pageable);
 
     List<AITask> findByStatus(TaskStatus status);
+    
+    List<AITask> findByStatus(String status);
 }

@@ -34,13 +34,22 @@ public class AIMessage {
     
     @Column(length = 10, nullable = false)
     @Enumerated(EnumType.STRING)
-    private MessageRole role; // USER, ASSISTANT
+    private MessageRole role; // USER, ASSISTANT, SYSTEM
+    
+    @Column(columnDefinition = "TEXT")
+    private String sources; // JSON or comma-separated sources
+    
+    @Column
+    private Integer tokensUsed;
+    
+    @Column
+    private Long processingTimeMs;
     
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
     
     public enum MessageRole {
-        USER, ASSISTANT
+        USER, ASSISTANT, SYSTEM
     }
 }

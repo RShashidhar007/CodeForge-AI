@@ -11,15 +11,13 @@ import java.time.LocalDateTime;
  * Task workspace entity for task execution environment
  */
 @Entity
-@Table(name = "task_workspaces", indexes = {
-    @Index(columnList = "task_id")
-})
+@Table(name = "task_workspaces")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(exclude = {"task"})
-@ToString(exclude = {"task"})
+@EqualsAndHashCode(exclude = {"aiTask"})
+@ToString(exclude = {"aiTask"})
 public class TaskWorkspace {
     
     @Id
@@ -27,17 +25,17 @@ public class TaskWorkspace {
     private Long id;
     
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "task_id", unique = true, nullable = false)
-    private AITask task;
+    @JoinColumn(name = "ai_task_id", nullable = false, unique = true)
+    private AITask aiTask;
     
-    @Column(length = 500, nullable = false)
+    @Column(columnDefinition = "NVARCHAR(MAX)")
     private String workspacePath;
     
-    @Column(columnDefinition = "TEXT")
-    private String environment; // JSON encoded environment variables
+    @Column
+    private Integer cloneDepth;
     
-    @Column(nullable = false)
-    private Long diskUsageBytes;
+    @Column(length = 255)
+    private String branchName;
     
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

@@ -8,12 +8,10 @@ import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
 
 /**
- * Repository index metadata for tracking RAG indexing status
+ * Repository index metadata entity for tracking indexing progress
  */
 @Entity
-@Table(name = "repository_index_metadata", indexes = {
-    @Index(columnList = "project_id")
-})
+@Table(name = "repository_index_metadata")
 @Data
 @Builder
 @NoArgsConstructor
@@ -27,26 +25,23 @@ public class RepositoryIndexMetadata {
     private Long id;
     
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "project_id", unique = true, nullable = false)
+    @JoinColumn(name = "project_id", nullable = false, unique = true)
     private Project project;
     
-    @Column(nullable = false)
-    private Integer totalFiles;
+    @Column
+    private Long totalFiles;
     
-    @Column(nullable = false)
-    private Integer indexedFiles;
+    @Column
+    private Long indexedFiles;
     
-    @Column(nullable = false)
-    private Integer totalChunks;
-    
-    @Column(nullable = false)
-    private Double progress; // 0.0 to 1.0
-    
-    @Column(columnDefinition = "TEXT")
-    private String lastError;
+    @Column
+    private Long totalChunks;
     
     @Column
     private LocalDateTime lastIndexedAt;
+    
+    @Column(length = 50)
+    private String status;
     
     @CreationTimestamp
     @Column(nullable = false, updatable = false)

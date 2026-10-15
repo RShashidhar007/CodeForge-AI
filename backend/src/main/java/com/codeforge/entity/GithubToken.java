@@ -26,15 +26,21 @@ public class GithubToken {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     
-    @Column(length = 500, nullable = false)
-    private String token;
-    
-    @Column(length = 255)
-    private String username;
-    
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", nullable = false)
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
+    
+    @Column(columnDefinition = "NVARCHAR(MAX)", nullable = false)
+    private String accessToken;
+    
+    @Column(columnDefinition = "NVARCHAR(MAX)")
+    private String refreshToken;
+    
+    @Column
+    private LocalDateTime expiresAt;
+    
+    @Column(length = 500)
+    private String scopes;
     
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
