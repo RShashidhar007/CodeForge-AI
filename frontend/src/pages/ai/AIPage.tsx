@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Send, Loader, AlertCircle, ChevronDown, MessageSquare } from 'lucide-react';
+import { Send, Loader, AlertCircle, ChevronDown, MessageSquare, Search } from 'lucide-react';
 import { aiService } from '../../services/api/aiService';
+import { SemanticSearchPanel } from '../../components/ai/SemanticSearchPanel';
+import type { Project } from '../../types/project';
 import './AIPage.css';
 
 interface Source {
@@ -24,8 +26,15 @@ interface Conversation {
   createdAt: string;
 }
 
+type TabType = 'chat' | 'search';
+
 export const AIPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
+  const [activeTab, setActiveTab] = useState<TabType>('chat');
+  const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
+    projectId ? parseInt(projectId) : null
+  );
+  const [projects] = useState<Project[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -173,6 +182,27 @@ export const AIPage: React.FC = () => {
       </div>
 
       <div className="ai-main">
+        {/* Tab Navigation */}
+        <div className="ai-tabs">
+          <button
+            className={`tab-button ${activeTab === 'chat' ? 'active' : ''}`}
+            onClick={() => setActiveTab('chat')}
+          >
+            <MessageSquare size={18} />
+            Chat
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'search' ? 'active' : ''}`}
+            onClick={() => setActiveTab('search')}
+          >
+            <Search size={18} />
+            Code Search
+          </button>
+        </div>
+
+        {/* Chat Tab Content */}
+        {activeTab === 'chat' && (
+          <>
         <div className="ai-header">
           <h1>🤖 AI Code Assistant</h1>
           <p>Ask questions about your codebase. Answers are generated from the indexed repository context.</p>
@@ -286,6 +316,19 @@ export const AIPage: React.FC = () => {
             💡 Tip: Be specific. Ask about files, functions, or architecture.
           </p>
         </form>
+          </>
+        )}
+
+        {/* Code Search Tab Content */}
+        {activeTab === 'search' && (
+          <div style={{ padding: '2rem', overflowY: 'auto', flex: 1 }}>
+            <SemanticSearchPanel
+              projects={projects}
+              selectedProjectId={selectedProjectId}
+              onProjectChange={setSelectedProjectId}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

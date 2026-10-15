@@ -16,6 +16,7 @@ import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
 import { GithubIntegrationPage } from "./pages/github/GithubIntegrationPage";
 import { GithubCallbackPage } from "./pages/github/GithubCallbackPage";
+import { AIPage } from "./pages/ai/AIPage";
 import { UnauthorizedPage } from "./pages/UnauthorizedPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 
@@ -54,6 +55,7 @@ export default function App() {
 
               <Route element={<RoleRoute allowedRoles={["CANDIDATE", "RECRUITER"]} />}>
                 <Route path="/github" element={<GithubIntegrationPage />} />
+                <Route path="/ai/:projectId?" element={<AIPage />} />
               </Route>
             </Route>
           </Route>
