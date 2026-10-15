@@ -2,7 +2,7 @@
   "id": "FEAT-003",
   "type": "feat",
   "description": "Semantic Code Search Panel: debounced search input, project selector, results display with expandable code previews. Creates SemanticSearchPanel component that calls codeSearchService.semanticSearch with 300ms debounce, shows results as cards with file path, line numbers, symbol, similarity score badge, and collapsible code preview in monospace font. Depends on FEAT-001 services and types.",
-  "status": "pending",
+  "status": "completed",
   "steps": [
     "1. Create src/components/ai/SemanticSearchPanel.tsx: component with search input, project selector dropdown, results list. Takes props: projects (Project[]), selectedProjectId (number | null), onProjectChange ((id: number) => void).",
     "2. Implement debounced search: useState for query and debouncedQuery. useEffect with 300ms setTimeout to update debouncedQuery when query changes. Cleanup: clearTimeout on unmount or query change.",
@@ -37,5 +37,5 @@
     "Resize to mobile — layout remains usable without horizontal scroll"
   ],
   "blocked_reason": null,
-  "findings": ""
+  "findings": "SemanticSearchPanel component implemented with all required features. Component accepts projects array, selectedProjectId, and onProjectChange callback props. Project selector dropdown renders all projects with full width styling. Search input implements 300ms debounce using useState for query/debouncedQuery and useEffect with setTimeout cleanup. Search trigger useEffect watches debouncedQuery and selectedProjectId, calls codeSearchService.semanticSearch with maxResults=20 when both non-empty, sets loading state, handles errors via showError(parseGithubError(err)). Search input disabled when no project selected. Loader icon replaces Search icon during loading state. Results render as clickable cards with FileCode icon, filePath in monospace font weight 500, line numbers (startLine-endLine), optional language display, score badge showing percentage with green background (#ecfdf5 with #059669 text) for scores >70%. Expand/collapse state tracked using Set<string> of resultKeys (filePath-startLine-index for uniqueness). ChevronDown/ChevronUp icons toggle based on expanded state. Expanded code preview renders in <pre><code> with max-height 300px, overflow auto, monospace font, #f5f5f5 background, 0.75rem padding, 6px border-radius, 0.8rem font-size, pre-wrap and word-break for proper text wrapping. Empty states: 'No results found' when debouncedQuery set but results empty, 'Enter a search query to find relevant code' when no query. Both empty states show FileCode icon size 48 with muted color. Build completes without TypeScript errors. Linter shows expected warning for setState in effect (debounce pattern is correct). All acceptance criteria met: debounce works, API triggered correctly, results display with all metadata, expand/collapse toggles code preview, empty states render, loading indicator shows during search."
 }
