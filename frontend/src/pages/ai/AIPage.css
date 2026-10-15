@@ -298,6 +298,73 @@
   margin-bottom: 0;
 }
 
+/* Code block styles */
+.code-block-wrapper {
+  margin: 0.75rem 0;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid #ddd;
+}
+
+.code-block-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #2d2d2d;
+  color: #fff;
+  font-size: 0.75rem;
+}
+
+.code-language {
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.copy-button {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: #fff;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.75rem;
+  transition: background 0.2s;
+}
+
+.copy-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.code-block {
+  margin: 0;
+  padding: 1rem;
+  background: #1e1e1e;
+  color: #d4d4d4;
+  font-family: Monaco, Menlo, 'Ubuntu Mono', monospace;
+  font-size: 0.85rem;
+  overflow-x: auto;
+}
+
+.code-block code {
+  font-family: inherit;
+}
+
+/* Message timestamp */
+.message-timestamp {
+  font-size: 0.7rem;
+  color: var(--color-muted, #999);
+  margin-top: 0.25rem;
+  text-align: right;
+}
+
+.user-message .message-timestamp {
+  color: rgba(255, 255, 255, 0.7);
+}
+
 /* Typing indicator */
 .typing-indicator {
   display: flex;

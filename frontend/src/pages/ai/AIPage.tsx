@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { Send, Loader, AlertCircle, ChevronDown, MessageSquare, Search } from 'lucide-react';
+import { Send, Loader, AlertCircle, ChevronDown, MessageSquare, Search, Copy, Check } from 'lucide-react';
 import { aiService } from '../../services/api/aiService';
 import { SemanticSearchPanel } from '../../components/ai/SemanticSearchPanel';
 import type { Project } from '../../types/project';
@@ -27,6 +27,84 @@ interface Conversation {
 }
 
 type TabType = 'chat' | 'search';
+
+// CodeBlock component for rendering code with copy functionality
+const CodeBlock: React.FC<{ code: string; language: string }> = ({ code, language }) => {
+  const [copied, setCopied] = useState(false);
+
+  const copyToClipboard = async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error('Failed to copy code:', err);
+    }
+  };
+
+  return (
+    <div className="code-block-wrapper">
+      <div className="code-block-header">
+        <span className="code-language">{language || 'text'}</span>
+        <button className="copy-button" onClick={copyToClipboard}>
+          {copied ? (
+            <>
+              <Check size={14} />
+              Copied!
+            </>
+          ) : (
+            <>
+              <Copy size={14} />
+              Copy
+            </>
+          )}
+        </button>
+      </div>
+      <pre className="code-block">
+        <code>{code}</code>
+      </pre>
+    </div>
+  );
+};
+
+// Helper function to parse message content and render text and code blocks
+const renderMessageContent = (content: string): React.ReactNode[] => {
+  const nodes: React.ReactNode[] = [];
+  const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+  let lastIndex = 0;
+  let match;
+  let keyCounter = 0;
+
+  while ((match = codeBlockRegex.exec(content)) !== null) {
+    const matchStart = match.index;
+    const matchEnd = codeBlockRegex.lastIndex;
+    
+    // Add text before code block
+    if (matchStart > lastIndex) {
+      const textBefore = content.substring(lastIndex, matchStart);
+      textBefore.split('\n').forEach((line) => {
+        nodes.push(<p key={`text-${keyCounter++}`}>{line || <br />}</p>);
+      });
+    }
+    
+    // Add code block
+    const language = match[1] || 'text';
+    const code = match[2];
+    nodes.push(<CodeBlock key={`code-${keyCounter++}`} code={code} language={language} />);
+    
+    lastIndex = matchEnd;
+  }
+
+  // Add remaining text after last code block
+  if (lastIndex < content.length) {
+    const remainingText = content.substring(lastIndex);
+    remainingText.split('\n').forEach((line) => {
+      nodes.push(<p key={`text-${keyCounter++}`}>{line || <br />}</p>);
+    });
+  }
+
+  return nodes.length > 0 ? nodes : [<p key="empty"><br /></p>];
+};
 
 export const AIPage: React.FC = () => {
   const { projectId } = useParams<{ projectId: string }>();
@@ -68,6 +146,7 @@ export const AIPage: React.FC = () => {
     const userMessage: Message = {
       role: 'user',
       content: input,
+      createdAt: new Date().toISOString(),
     };
 
     // Add user message immediately
@@ -238,15 +317,18 @@ export const AIPage: React.FC = () => {
                 <div className="message-content">
                   {message.role === 'assistant' ? (
                     <div className="markdown-content">
-                      {/* Simple markdown rendering */}
-                      {message.content.split('\n').map((line, i) => (
-                        <p key={i}>{line || <br />}</p>
-                      ))}
+                      {renderMessageContent(message.content)}
                     </div>
                   ) : (
                     <p>{message.content}</p>
                   )}
                 </div>
+
+                {message.createdAt && (
+                  <div className="message-timestamp">
+                    {new Date(message.createdAt).toLocaleTimeString()}
+                  </div>
+                )}
 
                 {message.sources && message.sources.length > 0 && (
                   <div className="message-sources">
