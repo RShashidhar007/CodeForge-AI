@@ -39,9 +39,12 @@ export function RepositoryImportModal({ repository, onClose }: RepositoryImportM
   useEffect(() => {
     if (!importing || !selectedProjectId) return;
 
+    let mounted = true;
     const intervalId = setInterval(async () => {
       try {
         const status = await githubService.getImportStatus(selectedProjectId);
+        if (!mounted) return;
+
         setImportStatus(status);
 
         if (status.status === "COMPLETED") {
@@ -54,13 +57,17 @@ export function RepositoryImportModal({ repository, onClose }: RepositoryImportM
           setImporting(false);
         }
       } catch (err) {
+        if (!mounted) return;
         clearInterval(intervalId);
         setError(parseGithubError(err));
         setImporting(false);
       }
     }, 2000);
 
-    return () => clearInterval(intervalId);
+    return () => {
+      mounted = false;
+      clearInterval(intervalId);
+    };
   }, [importing, selectedProjectId]);
 
   const handleImport = async () => {
@@ -115,7 +122,7 @@ export function RepositoryImportModal({ repository, onClose }: RepositoryImportM
       <div
         className="card"
         style={{
-          width: window.innerWidth < 768 ? "95%" : "90%",
+          width: "95%",
           maxWidth: "600px",
           zIndex: 1000,
           position: "relative",

@@ -40,6 +40,8 @@ export function SemanticSearchPanel({
       return;
     }
 
+    let mounted = true;
+
     const performSearch = async () => {
       setLoading(true);
       try {
@@ -48,16 +50,24 @@ export function SemanticSearchPanel({
           query: debouncedQuery,
           maxResults: 20,
         });
+        if (!mounted) return;
         setResults(response.results);
       } catch (err) {
+        if (!mounted) return;
         showError(parseGithubError(err));
         setResults([]);
       } finally {
-        setLoading(false);
+        if (mounted) {
+          setLoading(false);
+        }
       }
     };
 
     performSearch();
+
+    return () => {
+      mounted = false;
+    };
   }, [debouncedQuery, selectedProjectId]);
 
   const toggleExpanded = (resultKey: string) => {

@@ -12,41 +12,56 @@ export function GithubIntegrationPage() {
   const [loading, setLoading] = useState(true);
   const [selectedRepo, setSelectedRepo] = useState<GithubRepository | null>(null);
 
-  const checkConnection = async () => {
-    setLoading(true);
-    try {
-      const repos = await githubService.listRepositories();
-      setRepositories(repos);
-      setConnected(true);
-    } catch {
-      setConnected(false);
-      setRepositories([]);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    checkConnection();
+    let mounted = true;
+
+    const loadRepositories = async () => {
+      setLoading(true);
+      try {
+        const repos = await githubService.listRepositories();
+        if (mounted) {
+          setRepositories(repos);
+          setConnected(true);
+        }
+      } catch {
+        if (mounted) {
+          setConnected(false);
+          setRepositories([]);
+        }
+      } finally {
+        if (mounted) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadRepositories();
 
     // Listen for OAuth success/error messages from popup
     const handleMessage = (event: MessageEvent) => {
       if (event.data.type === "github-oauth-success") {
         showSuccess("GitHub connected successfully!");
-        checkConnection();
+        loadRepositories();
       } else if (event.data.type === "github-oauth-error") {
         showError(event.data.error || "GitHub connection failed");
       }
     };
 
     window.addEventListener("message", handleMessage);
-    return () => window.removeEventListener("message", handleMessage);
+    return () => {
+      mounted = false;
+      window.removeEventListener("message", handleMessage);
+    };
   }, []);
 
   const handleConnect = async () => {
     try {
       const { authorizationUrl } = await githubService.getOAuthUrl();
-      window.open(authorizationUrl, "GitHub OAuth", "width=600,height=700");
+      const popup = window.open(authorizationUrl, "GitHub OAuth", "width=600,height=700");
+      
+      if (!popup) {
+        showError("Popup blocked. Please allow popups for this site and try again.");
+      }
     } catch (err) {
       showError(parseGithubError(err));
     }

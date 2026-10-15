@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { Send, Loader, AlertCircle, ChevronDown, MessageSquare, Search, Copy, Check } from 'lucide-react';
 import { aiService } from '../../services/api/aiService';
+import { projectService } from '../../services/api/projectService';
 import { SemanticSearchPanel } from '../../components/ai/SemanticSearchPanel';
+import { showError } from '../../utils/toast';
 import type { Project } from '../../types/project';
 import './AIPage.css';
 
@@ -33,20 +35,35 @@ const CodeBlock: React.FC<{ code: string; language: string }> = ({ code, languag
   const [copied, setCopied] = useState(false);
 
   const copyToClipboard = async () => {
+    // Check if Clipboard API is available (requires HTTPS or localhost)
+    if (!navigator.clipboard) {
+      showError('Clipboard API not available. Copy feature requires HTTPS or localhost.');
+      return;
+    }
+
     try {
       await navigator.clipboard.writeText(code);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
+      showError('Failed to copy code to clipboard');
       console.error('Failed to copy code:', err);
     }
   };
+
+  // Disable copy button if Clipboard API is unavailable
+  const isClipboardAvailable = typeof navigator !== 'undefined' && navigator.clipboard;
 
   return (
     <div className="code-block-wrapper">
       <div className="code-block-header">
         <span className="code-language">{language || 'text'}</span>
-        <button className="copy-button" onClick={copyToClipboard}>
+        <button 
+          className="copy-button" 
+          onClick={copyToClipboard}
+          disabled={!isClipboardAvailable}
+          title={isClipboardAvailable ? 'Copy code' : 'Clipboard not available (requires HTTPS or localhost)'}
+        >
           {copied ? (
             <>
               <Check size={14} />
@@ -68,6 +85,9 @@ const CodeBlock: React.FC<{ code: string; language: string }> = ({ code, languag
 };
 
 // Helper function to parse message content and render text and code blocks
+// Note: This regex-based parser handles basic markdown code blocks (```language\ncode```)
+// Limitations: Does not handle escaped backticks or nested code blocks
+// For complex markdown, consider using a dedicated parser library like react-markdown
 const renderMessageContent = (content: string): React.ReactNode[] => {
   const nodes: React.ReactNode[] = [];
   const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
@@ -112,7 +132,7 @@ export const AIPage: React.FC = () => {
   const [selectedProjectId, setSelectedProjectId] = useState<number | null>(
     projectId ? parseInt(projectId) : null
   );
-  const [projects] = useState<Project[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
@@ -123,6 +143,22 @@ export const AIPage: React.FC = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const projectIdNum = projectId ? parseInt(projectId) : 0;
+
+  // Load projects on mount
+  useEffect(() => {
+    projectService
+      .listProjects()
+      .then((data) => {
+        setProjects(data);
+        // If no project selected but we have projects, select the first one
+        if (!selectedProjectId && data.length > 0) {
+          setSelectedProjectId(data[0].id);
+        }
+      })
+      .catch((err) => {
+        showError('Failed to load projects: ' + (err.message || 'Unknown error'));
+      });
+  }, []);
 
   // Auto-scroll to bottom when new messages arrive
   useEffect(() => {

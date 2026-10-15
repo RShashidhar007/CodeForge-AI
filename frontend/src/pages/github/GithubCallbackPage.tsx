@@ -7,16 +7,22 @@ import { parseGithubError } from "../../utils/errorHandler";
 
 export function GithubCallbackPage() {
   const [searchParams] = useSearchParams();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-  const [message, setMessage] = useState("");
+  const [status, setStatus] = useState<"loading" | "success" | "error">(() => {
+    const code = searchParams.get("code");
+    const state = searchParams.get("state");
+    return !code || !state ? "error" : "loading";
+  });
+  const [message, setMessage] = useState(() => {
+    const code = searchParams.get("code");
+    const state = searchParams.get("state");
+    return !code || !state ? "Missing authorization code or state" : "";
+  });
 
   useEffect(() => {
     const code = searchParams.get("code");
     const state = searchParams.get("state");
 
     if (!code || !state) {
-      setStatus("error");
-      setMessage("Missing authorization code or state");
       if (window.opener) {
         window.opener.postMessage(
           { type: "github-oauth-error", error: "Missing authorization code or state" },
@@ -26,11 +32,15 @@ export function GithubCallbackPage() {
       return;
     }
 
+    let mounted = true;
+
     githubService
       .handleOAuthCallback(code, state)
       .then(() => {
-        setStatus("success");
-        setMessage("GitHub Connected!");
+        if (mounted) {
+          setStatus("success");
+          setMessage("GitHub Connected!");
+        }
         if (window.opener) {
           window.opener.postMessage({ type: "github-oauth-success" }, "*");
         }
@@ -40,12 +50,18 @@ export function GithubCallbackPage() {
       })
       .catch((err) => {
         const errorMessage = parseGithubError(err);
-        setStatus("error");
-        setMessage(errorMessage);
+        if (mounted) {
+          setStatus("error");
+          setMessage(errorMessage);
+        }
         if (window.opener) {
           window.opener.postMessage({ type: "github-oauth-error", error: errorMessage }, "*");
         }
       });
+
+    return () => {
+      mounted = false;
+    };
   }, [searchParams]);
 
   if (status === "loading") {
