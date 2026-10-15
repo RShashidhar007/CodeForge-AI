@@ -6,6 +6,7 @@ export interface User {
   email: string;
   role: Role;
   enabled: boolean;
+  githubConnected?: boolean;
 }
 
 export interface LoginRequest {
@@ -32,4 +33,5 @@ export interface RegisterRecruiterRequest {
   password: string;
   position?: string;
   phone?: string;
+  companyName?: string;
 }

@@ -15,7 +15,7 @@ export function RegisterPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [position, setPosition] = useState("");
-  const [designation, setDesignation] = useState("");
+  const [phone, setPhone] = useState("");
   const [companyName, setCompanyName] = useState("");
 
   const [error, setError] = useState<string | null>(null);
@@ -36,7 +36,7 @@ export function RegisterPage() {
           email,
           password,
           position: position || undefined,
-          designation: designation || undefined,
+          phone: phone || undefined,
           companyName: companyName || undefined,
         });
       }
@@ -111,8 +111,8 @@ export function RegisterPage() {
                 <input id="position" value={position} onChange={(e) => setPosition(e.target.value)} />
               </div>
               <div className="form-group">
-                <label htmlFor="designation">Designation (optional)</label>
-                <input id="designation" value={designation} onChange={(e) => setDesignation(e.target.value)} />
+                <label htmlFor="phone">Phone (optional)</label>
+                <input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} />
               </div>
               <div className="form-group">
                 <label htmlFor="companyName">Company name (optional)</label>

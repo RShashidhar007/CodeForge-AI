@@ -19,7 +19,7 @@ export const githubService = {
     return apiClient.get("/github/repositories").then((r) => r.data);
   },
 
-  importRepository(request: ImportRepositoryRequest): Promise<{ projectId: number; message: string }> {
+  importRepository(request: ImportRepositoryRequest): Promise<{ projectId: string; message: string }> {
     return apiClient.post("/github/import", request).then((r) => r.data);
   },
 

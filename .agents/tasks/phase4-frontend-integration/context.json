@@ -1,0 +1,29 @@
+{
+  "project_type": "React 19 + TypeScript 6 frontend with Vite 8 bundler, integrating with Spring Boot backend API",
+  "language": "TypeScript",
+  "build_system": "Vite 8 with npm - no workspace configuration, single frontend package. Build outputs to frontend/dist/",
+  "test_framework": "None configured - manual browser testing only",
+  "build_command": "cd frontend && npm run build",
+  "test_command": "cd frontend && npm run lint (oxlint for linting only, no unit tests)",
+  "verification_instructions": "1. Run npm run build to verify TypeScript compiles without errors. 2. Run npm run dev to start dev server at http://localhost:5173. 3. Manually test each feature in browser: GitHub OAuth flow (requires backend with valid GitHub OAuth app credentials), repository import with progress tracking, semantic code search, AI chat with code block rendering and copy functionality. 4. Test responsive layouts at mobile (480px), tablet (768px), and desktop (1024px+) breakpoints using browser DevTools. 5. Verify all API calls work with backend running (POST requests return expected status codes, GET requests fetch data, OAuth callback posts message to parent window).",
+  "snapshot_or_generated_files": "None - frontend does not generate checked-in files. Build artifacts in dist/ are gitignored.",
+  "environment_constraints": "Backend must be running at http://localhost:8080/api (or VITE_API_BASE_URL override in .env.local). GitHub OAuth requires valid GITHUB_CLIENT_ID and GITHUB_CLIENT_SECRET configured in backend. Qdrant vector store must be running for code search to work (localhost:6334 by default). Browser must support ES2020+ (React 19 requirement). Clipboard API requires HTTPS or localhost for copy functionality.",
+  "contribution_requirements": "Match existing frontend patterns: use apiClient from src/services/apiClient.ts for all HTTP calls (handles JWT injection and snake_case to camelCase conversion automatically), use useState and useEffect hooks (NO react-query or other state management), follow CSS patterns from App.css (CSS variables --color-primary, --color-bg, etc., class names .btn, .card, .alert), use lucide-react for icons, use react-router-dom NavLink for navigation with isActive class pattern, keep components focused and single-responsibility. TypeScript strict mode is enabled - all types must be defined. No prop-types or runtime validation - rely on TypeScript.",
+  "key_patterns": "Service pattern: src/services/api/{domain}Service.ts exports object with methods returning apiClient.{method}(url, data).then(r => r.data). Type pattern: src/types/{domain}.ts exports interfaces using camelCase (backend snake_case auto-converted). Component pattern: functional components with TypeScript interfaces for props, useState for local state, useEffect for side effects and cleanup. Auth: useAuth() hook from AuthContext provides user object and login/logout methods. Protected routes: wrap in <ProtectedRoute> and <RoleRoute allowedRoles={[...]}> from src/routes/. Error handling: use parseGithubError or extractErrorMessage from utils, show errors via showError toast. Loading states: use Spinner, ProgressBar, LoadingOverlay, or SkeletonCard components from src/components/common/.",
+  "relevant_files": [
+    "frontend/package.json",
+    "frontend/src/App.tsx",
+    "frontend/src/App.css",
+    "frontend/src/services/apiClient.ts",
+    "frontend/src/components/Navbar.tsx",
+    "frontend/src/context/AuthContext.tsx",
+    "frontend/src/pages/ai/AIPage.tsx",
+    "frontend/src/pages/ai/AIPage.css",
+    "frontend/src/services/api/aiService.ts",
+    "frontend/src/types/auth.ts",
+    "frontend/src/types/api.ts",
+    "frontend/.env.example",
+    "frontend/README.md"
+  ],
+  "directory_structure": "frontend/src/: components/ (ai/, common/, github/, projects/, Navbar.tsx), context/ (AuthContext.tsx), layouts/ (MainLayout.tsx), pages/ (ai/, auth/, candidate/, recruiter/, admin/, github/), routes/ (ProtectedRoute.tsx, RoleRoute.tsx), services/ (api/, apiClient.ts, authService.ts), types/ (auth.ts, api.ts, github.ts, project.ts), utils/ (errorHandler.ts, toast.ts), App.tsx, App.css, main.tsx. Backend API endpoints: /api/github/*, /api/code/search, /api/v1/projects/{id}/ai/*"
+}

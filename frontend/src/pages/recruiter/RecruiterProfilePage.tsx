@@ -16,8 +16,6 @@ export function RecruiterProfilePage() {
   const [phone, setPhone] = useState("");
   const [position, setPosition] = useState("");
   const [bio, setBio] = useState("");
-  const [designation, setDesignation] = useState("");
-  const [companyName, setCompanyName] = useState("");
 
   useEffect(() => {
     recruiterService
@@ -27,8 +25,6 @@ export function RecruiterProfilePage() {
         setPhone(data.phone ?? "");
         setPosition(data.position ?? "");
         setBio(data.bio ?? "");
-        setDesignation(data.designation ?? "");
-        setCompanyName(data.company?.name ?? "");
       })
       .catch((err) => setError(extractErrorMessage(err)))
       .finally(() => setIsLoading(false));
@@ -40,7 +36,7 @@ export function RecruiterProfilePage() {
     setSuccess(null);
     setIsSaving(true);
     try {
-      const updated = await recruiterService.updateMyProfile({ phone, position, bio, designation, companyName });
+      const updated = await recruiterService.updateMyProfile({ phone, position, bio });
       setProfile(updated);
       setSuccess("Profile updated successfully.");
     } catch (err) {
@@ -93,14 +89,6 @@ export function RecruiterProfilePage() {
           <div className="form-group">
             <label htmlFor="bio">Bio</label>
             <textarea id="bio" rows={3} value={bio} onChange={(e) => setBio(e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label htmlFor="designation">Designation</label>
-            <input id="designation" value={designation} onChange={(e) => setDesignation(e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label htmlFor="companyName">Company name</label>
-            <input id="companyName" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
           </div>
           <button className="btn btn-primary" type="submit" disabled={isSaving}>
             {isSaving ? "Saving..." : "Save changes"}

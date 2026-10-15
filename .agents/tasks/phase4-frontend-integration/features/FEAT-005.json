@@ -1,0 +1,40 @@
+{
+  "id": "FEAT-005",
+  "type": "feat",
+  "description": "Chat Polish and Documentation: enhances AI chat with syntax-highlighted code blocks, copy-to-clipboard buttons, message timestamps, and updates frontend documentation. Modifies AIPage.tsx to parse code blocks from assistant messages, adds CodeBlock component with copy functionality, displays timestamps. Updates README.md and .env.example with complete feature documentation. Depends on FEAT-004 (AIPage with tabs).",
+  "status": "pending",
+  "steps": [
+    "1. Read existing src/pages/ai/AIPage.tsx message rendering logic in .markdown-content section. Currently uses simple p tags for each line split by \\n.",
+    "2. Create renderMessageContent helper function in AIPage.tsx: takes content string, uses regex /```(\\w+)?\\n([\\s\\S]*?)```/g to detect code blocks (```language\\ncode\\n```). Returns array of React nodes: text before code block as <p>, code block as <CodeBlock> component, remaining text as <p>.",
+    "3. Create CodeBlock component inside AIPage.tsx (not separate file): takes code (string) and language (string) props. useState for copied (boolean). copyToClipboard function uses navigator.clipboard.writeText(code), sets copied true for 2s. Render: div.code-block-wrapper with header (language label, copy button with Copy/Check icon from lucide-react) and <pre className=\"code-block\"><code>{code}</code></pre>.",
+    "4. Add code block styles to src/pages/ai/AIPage.css: .code-block-wrapper (margin 0.75rem 0, border-radius 6px, overflow hidden, border 1px solid #ddd). .code-block-header (display flex, justify-content space-between, padding 0.5rem 0.75rem, background #2d2d2d, color #fff, font-size 0.75rem). .code-language (text-transform uppercase, font-weight 600). .copy-button (display flex, align-items center, gap 0.25rem, background rgba(255,255,255,0.1), border none, color #fff, padding 0.25rem 0.5rem, border-radius 4px, cursor pointer, font-size 0.75rem, transition background 0.2s). .copy-button:hover (background rgba(255,255,255,0.2)). .code-block (margin 0, padding 1rem, background #1e1e1e, color #d4d4d4, font-family Monaco/Menlo/monospace, font-size 0.85rem, overflow-x auto).",
+    "5. Update message rendering in AIPage.tsx: for assistant messages, replace current .markdown-content content with {renderMessageContent(message.content)}. Import Copy and Check icons from lucide-react.",
+    "6. Add timestamp display: after .message-content div, add conditional render: {message.createdAt && (<div className=\"message-timestamp\">{new Date(message.createdAt).toLocaleTimeString()}</div>)}. Add .message-timestamp style to AIPage.css (font-size 0.7rem, color var(--color-muted), margin-top 0.25rem, text-align right). For user messages, add .user-message .message-timestamp (color rgba(255,255,255,0.7)).",
+    "7. Verify frontend/.env.example exists and contains: VITE_API_BASE_URL=http://localhost:8080/api with comment explaining it's the backend API base URL.",
+    "8. Update frontend/README.md: replace content with comprehensive documentation covering: Features (role-based dashboards, GitHub OAuth, repository import, semantic code search, AI chat with code blocks), Stack (React 19, TypeScript 6, Vite 8, Axios, React Router, Lucide React, React Toastify), Quick Start (npm install, copy .env.example, npm run dev), Environment Variables (VITE_API_BASE_URL), Routes (public: /login, /register, /github/callback; protected candidate/recruiter: /dashboard, /profile, /github, /ai/:projectId?; admin: /admin/dashboard, /admin/users), GitHub OAuth Setup (create OAuth app, set callback URL, configure backend env vars), Development Commands (install, dev, build, preview, lint), Project Structure (directory tree with explanations), Styling (CSS variables, reusable classes), Backend Integration (API endpoints summary).",
+    "9. Add responsive adjustments if needed: code blocks already have overflow-x auto for mobile. Test copy button works on mobile devices (may not work on all browsers due to clipboard API restrictions)."
+  ],
+  "acceptance_criteria": [
+    "npm run build completes without errors",
+    "Assistant messages with code blocks (```language\\ncode\\n```) render with syntax-highlighted header and monospace code",
+    "Copy button in code block header copies code to clipboard and shows 'Copied!' feedback for 2s",
+    "Message timestamps appear below each message in readable format (HH:MM:SS)",
+    "Code blocks have dark theme styling (dark background, light text, language label in header)",
+    "Frontend README.md documents all features, setup steps, routes, and project structure",
+    ".env.example contains VITE_API_BASE_URL with explanatory comment",
+    "All new styles are responsive and work on mobile (480px), tablet (768px), desktop (1024px+)"
+  ],
+  "verification": [
+    "cd frontend && npm run build — builds successfully",
+    "npm run dev and navigate to /ai",
+    "Send chat message that triggers assistant response with code block (e.g., 'Show me a JavaScript function')",
+    "Verify code block renders with dark header, language label, copy button, and dark code area",
+    "Click copy button — code copied to clipboard (test by pasting), button shows 'Copied!' with Check icon for 2s",
+    "Verify timestamps appear below each message in HH:MM:SS format",
+    "Test on mobile viewport (480px) — code blocks scroll horizontally if needed, copy button works (if browser supports)",
+    "Read frontend/README.md — documentation is complete and accurate",
+    "Check frontend/.env.example — VITE_API_BASE_URL documented with comment"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}

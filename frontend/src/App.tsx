@@ -14,6 +14,8 @@ import { RecruiterDashboard } from "./pages/recruiter/RecruiterDashboard";
 import { RecruiterProfilePage } from "./pages/recruiter/RecruiterProfilePage";
 import { AdminDashboard } from "./pages/admin/AdminDashboard";
 import { AdminUsersPage } from "./pages/admin/AdminUsersPage";
+import { GithubIntegrationPage } from "./pages/github/GithubIntegrationPage";
+import { GithubCallbackPage } from "./pages/github/GithubCallbackPage";
 import { UnauthorizedPage } from "./pages/UnauthorizedPage";
 import { NotFoundPage } from "./pages/NotFoundPage";
 
@@ -27,6 +29,7 @@ export default function App() {
         <Routes>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/github/callback" element={<GithubCallbackPage />} />
           <Route path="/unauthorized" element={<UnauthorizedPage />} />
 
           {/* Any authenticated user reaches these; MainLayout renders the navbar */}
@@ -47,6 +50,10 @@ export default function App() {
               <Route element={<RoleRoute allowedRoles={["ADMIN"]} />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/users" element={<AdminUsersPage />} />
+              </Route>
+
+              <Route element={<RoleRoute allowedRoles={["CANDIDATE", "RECRUITER"]} />}>
+                <Route path="/github" element={<GithubIntegrationPage />} />
               </Route>
             </Route>
           </Route>

@@ -17,6 +17,8 @@ public class AppProperties {
     private final Cors cors = new Cors();
     private final Admin admin = new Admin();
     private final Ai ai = new Ai();
+    private final Github github = new Github();
+    private final Qdrant qdrant = new Qdrant();
 
     @Data
     public static class Jwt {
@@ -58,5 +60,20 @@ public class AppProperties {
             private String apiKey;
             private int dimension = 1536;
         }
+    }
+
+    @Data
+    public static class Github {
+        private String clientId;
+        private String clientSecret;
+        private String oauthCallbackUrl;
+    }
+
+    @Data
+    public static class Qdrant {
+        private String host = "localhost";
+        private int port = 6334;
+        private String apiKey;
+        private String collectionName = "code_embeddings";
     }
 }

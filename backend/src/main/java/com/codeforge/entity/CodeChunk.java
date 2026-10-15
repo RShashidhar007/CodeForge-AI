@@ -47,6 +47,9 @@ public class CodeChunk {
     @Column(columnDefinition = "TEXT")
     private String embedding; // Stored as JSON array
     
+    @Column(length = 255)
+    private String vectorId;
+    
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

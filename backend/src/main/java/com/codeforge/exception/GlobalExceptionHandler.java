@@ -171,6 +171,61 @@ public class GlobalExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
     }
+    
+    /**
+     * Handle GitHub API errors (502 Bad Gateway)
+     */
+    @ExceptionHandler(GithubApiException.class)
+    public ResponseEntity<ErrorResponse> handleGithubApiException(
+            GithubApiException ex,
+            WebRequest request) {
+        
+        ErrorResponse error = ErrorResponse.of(
+            HttpStatus.BAD_GATEWAY.value(),
+            "Bad Gateway",
+            "GitHub API error: " + ex.getMessage(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return ResponseEntity.status(HttpStatus.BAD_GATEWAY).body(error);
+    }
+    
+    /**
+     * Handle vector store errors (503 Service Unavailable)
+     */
+    @ExceptionHandler(VectorStoreException.class)
+    public ResponseEntity<ErrorResponse> handleVectorStoreException(
+            VectorStoreException ex,
+            WebRequest request) {
+        
+        ErrorResponse error = ErrorResponse.of(
+            HttpStatus.SERVICE_UNAVAILABLE.value(),
+            "Service Unavailable",
+            "Vector store error: " + ex.getMessage(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
+    }
+    
+    /**
+     * Handle repository import errors (500 Internal Server Error)
+     */
+    @ExceptionHandler(RepositoryImportException.class)
+    public ResponseEntity<ErrorResponse> handleRepositoryImportException(
+            RepositoryImportException ex,
+            WebRequest request) {
+        
+        ErrorResponse error = ErrorResponse.of(
+            HttpStatus.INTERNAL_SERVER_ERROR.value(),
+            "Internal Server Error",
+            "Repository import failed: " + ex.getMessage(),
+            request.getDescription(false).replace("uri=", "")
+        );
+        
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
+    }
+    
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleGlobalException(
             Exception ex,

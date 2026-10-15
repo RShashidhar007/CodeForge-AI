@@ -38,7 +38,6 @@ export interface RecruiterProfile {
 }
 
 export interface RecruiterProfileUpdateRequest {
-  name?: string;
   phone?: string;
   position?: string;
   bio?: string;

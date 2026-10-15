@@ -54,6 +54,12 @@ public class Project {
     @Builder.Default
     private Set<AITask> aiTasks = new HashSet<>();
     
+    @Column(length = 50)
+    private String importStatus;
+    
+    @Column(length = 255)
+    private String importId;
+    
     @CreationTimestamp
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;

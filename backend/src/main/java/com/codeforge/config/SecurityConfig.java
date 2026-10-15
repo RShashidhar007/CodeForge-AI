@@ -59,6 +59,8 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.POST, "/auth/register/candidate").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/register/recruiter").permitAll()
                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
+                .requestMatchers(HttpMethod.POST, "/github/oauth/callback").permitAll()
+                .requestMatchers(HttpMethod.GET, "/github/oauth/authorize").permitAll()
                 .requestMatchers(HttpMethod.GET, "/actuator/health").permitAll()
                 .requestMatchers("/error").permitAll()
 

@@ -22,10 +22,9 @@ export interface GithubRepository {
 }
 
 export interface ImportRepositoryRequest {
-  repositoryId: number;
-  repositoryName: string;
-  cloneUrl: string;
-  defaultBranch: string;
+  owner: string;
+  repo: string;
+  projectId: number;
 }
 
 export type ImportStatus = 
@@ -38,10 +37,17 @@ export type ImportStatus =
 export interface ImportStatusResponse {
   projectId: number;
   status: ImportStatus;
-  message: string;
-  progress: number;
-  startedAt: string | null;
-  completedAt: string | null;
+  message?: string;
+  currentStep?: string;
+  totalFiles: number;
+  relevantFiles: number;
+  processedFiles: number;
+  totalChunks: number;
+  embeddedChunks: number;
+  error?: string;
+  startTime?: string;
+  endTime?: string;
+  progressPercentage: number;
 }
 
 export interface SemanticSearchRequest {

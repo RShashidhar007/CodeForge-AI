@@ -1,0 +1,41 @@
+{
+  "id": "FEAT-003",
+  "type": "feat",
+  "description": "Semantic Code Search Panel: debounced search input, project selector, results display with expandable code previews. Creates SemanticSearchPanel component that calls codeSearchService.semanticSearch with 300ms debounce, shows results as cards with file path, line numbers, symbol, similarity score badge, and collapsible code preview in monospace font. Depends on FEAT-001 services and types.",
+  "status": "pending",
+  "steps": [
+    "1. Create src/components/ai/SemanticSearchPanel.tsx: component with search input, project selector dropdown, results list. Takes props: projects (Project[]), selectedProjectId (number | null), onProjectChange ((id: number) => void).",
+    "2. Implement debounced search: useState for query and debouncedQuery. useEffect with 300ms setTimeout to update debouncedQuery when query changes. Cleanup: clearTimeout on unmount or query change.",
+    "3. Implement search trigger: useEffect watching debouncedQuery and selectedProjectId. When both are non-empty, call codeSearchService.semanticSearch({query: debouncedQuery, projectId: selectedProjectId, limit: 20}). Set loading state during call. On success, set results state. On error, call showError(parseGithubError(err)).",
+    "4. Render search UI: card with project selector (dropdown, full width), search input (relative positioned with Search icon on right, or Loader when loading). Disable input if no project selected.",
+    "5. Render results: map results array to cards. Each card shows: FileCode icon, filePath (monospace font weight 500), line numbers (startLine-endLine), optional symbol, score badge (percentage, green background if >70%). Card is clickable to toggle expanded state.",
+    "6. Implement expand/collapse: useState for expandedResults (Set<number> of chunkIds). Click card toggles chunkId in set. If expanded, render <pre><code>{result.content}</code></pre> below metadata. Pre has max-height 300px, overflow auto, monospace font, light gray background.",
+    "7. Show empty states: if no results and query is set, show FileCode icon with 'No results found'. If no query, show 'Enter a search query to find relevant code'.",
+    "8. Style results: use .card class for each result, display: flex, justify-content: space-between for header row. ChevronDown icon when collapsed, ChevronUp when expanded. Code preview in <pre> with padding 0.75rem, background #f5f5f5, border-radius 6px, font-size 0.8rem."
+  ],
+  "acceptance_criteria": [
+    "npm run build completes without errors",
+    "SemanticSearchPanel renders with project selector and search input",
+    "Typing in search input does not trigger search until 300ms after last keystroke (debounce)",
+    "Selecting project and entering query triggers semanticSearch API call",
+    "Results display as cards with file path, line numbers, symbol, and score badge",
+    "Clicking result card toggles expanded state to show/hide code preview",
+    "Code preview renders in monospace font with scrollable container if content exceeds max-height",
+    "Empty states show appropriate messages when no query or no results",
+    "Loading indicator (Loader icon) shows while search is in progress"
+  ],
+  "verification": [
+    "cd frontend && npm run build — builds successfully",
+    "npm run dev and navigate to /ai (route added in FEAT-004), switch to Code Search tab",
+    "Select a project from dropdown (requires projects to exist in backend)",
+    "Type search query — verify no API call until 300ms after last keystroke (check Network tab)",
+    "Submit query — verify POST /code/search request with correct payload",
+    "Results appear as cards — click to expand and see code preview",
+    "Verify score badge shows percentage, green background for high scores (>70%)",
+    "Test with no project selected — input disabled",
+    "Test with query that returns no results — empty state message displays",
+    "Resize to mobile — layout remains usable without horizontal scroll"
+  ],
+  "blocked_reason": null,
+  "findings": ""
+}
