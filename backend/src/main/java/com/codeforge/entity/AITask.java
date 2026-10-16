@@ -61,7 +61,7 @@ public class AITask {
     @Column(length = 255)
     private String executedByAgentId;
     
-    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "aiTask", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
     private Set<AgentExecution> executions = new HashSet<>();
     

@@ -25,13 +25,16 @@ public class CorsConfig {
         // Parse allowed origins from config (comma-separated)
         String allowedOrigins = appProperties.getCors().getAllowedOrigins();
         if (allowedOrigins != null && !allowedOrigins.isEmpty()) {
-            configuration.setAllowedOrigins(Arrays.asList(allowedOrigins.split(",")));
+            String[] origins = allowedOrigins.split(",");
+            configuration.setAllowedOrigins(Arrays.asList(Arrays.stream(origins).map(String::trim).toArray(String[]::new)));
         } else {
             // Default for local development
             configuration.setAllowedOrigins(Arrays.asList(
                 "http://localhost:5173",
+                "http://localhost:5174",
                 "http://localhost:3000",
-                "http://127.0.0.1:5173"
+                "http://127.0.0.1:5173",
+                "http://127.0.0.1:5174"
             ));
         }
         

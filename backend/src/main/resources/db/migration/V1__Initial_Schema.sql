@@ -172,7 +172,7 @@ CREATE TABLE ai_conversations (
     created_at DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
     updated_at DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
     FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE,
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE NO ACTION
 );
 
 CREATE INDEX idx_ai_conversations_project_id ON ai_conversations(project_id);
@@ -214,7 +214,7 @@ CREATE TABLE ai_tasks (
     created_at DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
     updated_at DATETIME2 NOT NULL DEFAULT GETUTCDATE(),
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
-    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE SET NULL
+    FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE NO ACTION
 );
 
 CREATE INDEX idx_ai_tasks_user_id ON ai_tasks(user_id);
