@@ -11,5 +11,5 @@ import java.util.List;
  */
 @Repository
 public interface AIAnalysisRepository extends JpaRepository<AIAnalysis, Long> {
-    List<AIAnalysis> findByProjectId(Long projectId);
+    List<AIAnalysis> findByCodeDocument_ProjectId(Long projectId);
 }
