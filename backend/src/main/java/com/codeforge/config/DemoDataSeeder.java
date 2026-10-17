@@ -14,6 +14,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +23,7 @@ import java.util.List;
  * Seeds the database with demo recruiters and candidates on application startup.
  * This makes it easy to test the platform without manual registration.
  */
-//@Component  // Temporarily disabled due to JPA cascade issues
+@Component  // Enabled to create demo users
 @RequiredArgsConstructor
 @Slf4j
 public class DemoDataSeeder implements ApplicationRunner {
@@ -44,6 +45,7 @@ public class DemoDataSeeder implements ApplicationRunner {
         log.info("Demo data seeding completed!");
     }
 
+    @Transactional
     private void seedCompanies() {
         if (companyRepository.count() > 0) {
             log.info("Companies already exist, skipping company seeding");
@@ -86,6 +88,7 @@ public class DemoDataSeeder implements ApplicationRunner {
         log.info("Seeded {} companies", companies.size());
     }
 
+    @Transactional
     private void seedCandidates() {
         if (candidateRepository.count() > 0) {
             log.info("Candidates already exist, skipping candidate seeding");
@@ -95,15 +98,13 @@ public class DemoDataSeeder implements ApplicationRunner {
         // Alice - Full Stack Developer
         User alice = createUserIfNotExists("alice@student.com", "Alice Johnson", User.UserRole.CANDIDATE);
         if (alice != null && !candidateRepository.existsById(alice.getId())) {
-            Candidate candidate = Candidate.builder()
-                .id(alice.getId())  // Set ID explicitly
-                .user(alice)
-                .phone("+1-555-0101")
-                .location("San Francisco, CA")
-                .bio("Full Stack Developer with 5+ years of experience in Java, React, and cloud technologies")
-                .githubUrl("https://github.com/alice")
-                .linkedinUrl("https://linkedin.com/in/alice")
-                .build();
+            Candidate candidate = new Candidate();
+            candidate.setUser(alice);  // This sets the ID via @MapsId
+            candidate.setPhone("+1-555-0101");
+            candidate.setLocation("San Francisco, CA");
+            candidate.setBio("Full Stack Developer with 5+ years of experience in Java, React, and cloud technologies");
+            candidate.setGithubUrl("https://github.com/alice");
+            candidate.setLinkedinUrl("https://linkedin.com/in/alice");
             candidateRepository.save(candidate);
             log.info("Seeded candidate: {}", alice.getEmail());
         }
@@ -111,15 +112,13 @@ public class DemoDataSeeder implements ApplicationRunner {
         // Bob - Backend Developer
         User bob = createUserIfNotExists("bob@student.com", "Bob Smith", User.UserRole.CANDIDATE);
         if (bob != null && !candidateRepository.existsById(bob.getId())) {
-            Candidate candidate = Candidate.builder()
-                .id(bob.getId())
-                .user(bob)
-                .phone("+1-555-0102")
-                .location("New York, NY")
-                .bio("Backend Engineer specializing in microservices, Spring Boot, and databases")
-                .githubUrl("https://github.com/bob")
-                .linkedinUrl("https://linkedin.com/in/bob")
-                .build();
+            Candidate candidate = new Candidate();
+            candidate.setUser(bob);
+            candidate.setPhone("+1-555-0102");
+            candidate.setLocation("New York, NY");
+            candidate.setBio("Backend Engineer specializing in microservices, Spring Boot, and databases");
+            candidate.setGithubUrl("https://github.com/bob");
+            candidate.setLinkedinUrl("https://linkedin.com/in/bob");
             candidateRepository.save(candidate);
             log.info("Seeded candidate: {}", bob.getEmail());
         }
@@ -127,15 +126,13 @@ public class DemoDataSeeder implements ApplicationRunner {
         // Carol - Data Scientist
         User carol = createUserIfNotExists("carol@student.com", "Carol Williams", User.UserRole.CANDIDATE);
         if (carol != null && !candidateRepository.existsById(carol.getId())) {
-            Candidate candidate = Candidate.builder()
-                .id(carol.getId())
-                .user(carol)
-                .phone("+1-555-0103")
-                .location("Boston, MA")
-                .bio("Data Scientist with expertise in Python, Machine Learning, and Data Analytics")
-                .githubUrl("https://github.com/carol")
-                .linkedinUrl("https://linkedin.com/in/carol")
-                .build();
+            Candidate candidate = new Candidate();
+            candidate.setUser(carol);
+            candidate.setPhone("+1-555-0103");
+            candidate.setLocation("Boston, MA");
+            candidate.setBio("Data Scientist with expertise in Python, Machine Learning, and Data Analytics");
+            candidate.setGithubUrl("https://github.com/carol");
+            candidate.setLinkedinUrl("https://linkedin.com/in/carol");
             candidateRepository.save(candidate);
             log.info("Seeded candidate: {}", carol.getEmail());
         }
@@ -143,15 +140,13 @@ public class DemoDataSeeder implements ApplicationRunner {
         // David - Frontend Developer
         User david = createUserIfNotExists("david@student.com", "David Brown", User.UserRole.CANDIDATE);
         if (david != null && !candidateRepository.existsById(david.getId())) {
-            Candidate candidate = Candidate.builder()
-                .id(david.getId())
-                .user(david)
-                .phone("+1-555-0104")
-                .location("Seattle, WA")
-                .bio("Frontend Developer passionate about React, TypeScript, and UX design")
-                .githubUrl("https://github.com/david")
-                .linkedinUrl("https://linkedin.com/in/david")
-                .build();
+            Candidate candidate = new Candidate();
+            candidate.setUser(david);
+            candidate.setPhone("+1-555-0104");
+            candidate.setLocation("Seattle, WA");
+            candidate.setBio("Frontend Developer passionate about React, TypeScript, and UX design");
+            candidate.setGithubUrl("https://github.com/david");
+            candidate.setLinkedinUrl("https://linkedin.com/in/david");
             candidateRepository.save(candidate);
             log.info("Seeded candidate: {}", david.getEmail());
         }
@@ -159,15 +154,13 @@ public class DemoDataSeeder implements ApplicationRunner {
         // Emma - DevOps Engineer
         User emma = createUserIfNotExists("emma@student.com", "Emma Davis", User.UserRole.CANDIDATE);
         if (emma != null && !candidateRepository.existsById(emma.getId())) {
-            Candidate candidate = Candidate.builder()
-                .id(emma.getId())
-                .user(emma)
-                .phone("+1-555-0105")
-                .location("Austin, TX")
-                .bio("DevOps Engineer with 6+ years in AWS, Kubernetes, and CI/CD pipelines")
-                .githubUrl("https://github.com/emma")
-                .linkedinUrl("https://linkedin.com/in/emma")
-                .build();
+            Candidate candidate = new Candidate();
+            candidate.setUser(emma);
+            candidate.setPhone("+1-555-0105");
+            candidate.setLocation("Austin, TX");
+            candidate.setBio("DevOps Engineer with 6+ years in AWS, Kubernetes, and CI/CD pipelines");
+            candidate.setGithubUrl("https://github.com/emma");
+            candidate.setLinkedinUrl("https://linkedin.com/in/emma");
             candidateRepository.save(candidate);
             log.info("Seeded candidate: {}", emma.getEmail());
         }
@@ -175,6 +168,7 @@ public class DemoDataSeeder implements ApplicationRunner {
         log.info("Candidate seeding completed");
     }
 
+    @Transactional
     private void seedRecruiters() {
         if (recruiterRepository.count() > 0) {
             log.info("Recruiters already exist, skipping recruiter seeding");
@@ -191,14 +185,12 @@ public class DemoDataSeeder implements ApplicationRunner {
         // Sarah - TechCorp Solutions
         User sarah = createUserIfNotExists("sarah@recruiter.com", "Sarah Anderson", User.UserRole.RECRUITER);
         if (sarah != null && techCorp != null && !recruiterRepository.existsById(sarah.getId())) {
-            Recruiter recruiter = Recruiter.builder()
-                .id(sarah.getId())
-                .user(sarah)
-                .company(techCorp)
-                .phone("+1-555-1001")
-                .position("Senior Technical Recruiter")
-                .bio("Specialized in recruiting software engineers for full-stack and backend positions")
-                .build();
+            Recruiter recruiter = new Recruiter();
+            recruiter.setUser(sarah);  // This sets the ID via @MapsId
+            recruiter.setCompany(techCorp);
+            recruiter.setPhone("+1-555-1001");
+            recruiter.setPosition("Senior Technical Recruiter");
+            recruiter.setBio("Specialized in recruiting software engineers for full-stack and backend positions");
             recruiterRepository.save(recruiter);
             log.info("Seeded recruiter: {}", sarah.getEmail());
         }
@@ -206,14 +198,12 @@ public class DemoDataSeeder implements ApplicationRunner {
         // James - DataViz Analytics
         User james = createUserIfNotExists("james@recruiter.com", "James Miller", User.UserRole.RECRUITER);
         if (james != null && dataViz != null && !recruiterRepository.existsById(james.getId())) {
-            Recruiter recruiter = Recruiter.builder()
-                .id(james.getId())
-                .user(james)
-                .company(dataViz)
-                .phone("+1-555-1002")
-                .position("Hiring Manager")
-                .bio("Looking for talented data scientists and analytics engineers")
-                .build();
+            Recruiter recruiter = new Recruiter();
+            recruiter.setUser(james);
+            recruiter.setCompany(dataViz);
+            recruiter.setPhone("+1-555-1002");
+            recruiter.setPosition("Hiring Manager");
+            recruiter.setBio("Looking for talented data scientists and analytics engineers");
             recruiterRepository.save(recruiter);
             log.info("Seeded recruiter: {}", james.getEmail());
         }
@@ -221,14 +211,12 @@ public class DemoDataSeeder implements ApplicationRunner {
         // Lisa - CloudStack Systems
         User lisa = createUserIfNotExists("lisa@recruiter.com", "Lisa Taylor", User.UserRole.RECRUITER);
         if (lisa != null && cloudStack != null && !recruiterRepository.existsById(lisa.getId())) {
-            Recruiter recruiter = Recruiter.builder()
-                .id(lisa.getId())
-                .user(lisa)
-                .company(cloudStack)
-                .phone("+1-555-1003")
-                .position("DevOps Recruiter")
-                .bio("Recruiting cloud architects and DevOps engineers for enterprise solutions")
-                .build();
+            Recruiter recruiter = new Recruiter();
+            recruiter.setUser(lisa);
+            recruiter.setCompany(cloudStack);
+            recruiter.setPhone("+1-555-1003");
+            recruiter.setPosition("DevOps Recruiter");
+            recruiter.setBio("Recruiting cloud architects and DevOps engineers for enterprise solutions");
             recruiterRepository.save(recruiter);
             log.info("Seeded recruiter: {}", lisa.getEmail());
         }
@@ -236,14 +224,12 @@ public class DemoDataSeeder implements ApplicationRunner {
         // Michael - FinTech Innovations
         User michael = createUserIfNotExists("michael@recruiter.com", "Michael Chen", User.UserRole.RECRUITER);
         if (michael != null && fintech != null && !recruiterRepository.existsById(michael.getId())) {
-            Recruiter recruiter = Recruiter.builder()
-                .id(michael.getId())
-                .user(michael)
-                .company(fintech)
-                .phone("+1-555-1004")
-                .position("Engineering Recruiter")
-                .bio("Building the team for blockchain and fintech innovation")
-                .build();
+            Recruiter recruiter = new Recruiter();
+            recruiter.setUser(michael);
+            recruiter.setCompany(fintech);
+            recruiter.setPhone("+1-555-1004");
+            recruiter.setPosition("Engineering Recruiter");
+            recruiter.setBio("Building the team for blockchain and fintech innovation");
             recruiterRepository.save(recruiter);
             log.info("Seeded recruiter: {}", michael.getEmail());
         }
@@ -251,14 +237,12 @@ public class DemoDataSeeder implements ApplicationRunner {
         // Jennifer - AI Research Labs
         User jennifer = createUserIfNotExists("jennifer@recruiter.com", "Jennifer Wilson", User.UserRole.RECRUITER);
         if (jennifer != null && aiLabs != null && !recruiterRepository.existsById(jennifer.getId())) {
-            Recruiter recruiter = Recruiter.builder()
-                .id(jennifer.getId())
-                .user(jennifer)
-                .company(aiLabs)
-                .phone("+1-555-1005")
-                .position("AI/ML Recruiter")
-                .bio("Recruiting ML engineers and AI researchers for cutting-edge projects")
-                .build();
+            Recruiter recruiter = new Recruiter();
+            recruiter.setUser(jennifer);
+            recruiter.setCompany(aiLabs);
+            recruiter.setPhone("+1-555-1005");
+            recruiter.setPosition("AI/ML Recruiter");
+            recruiter.setBio("Recruiting ML engineers and AI researchers for cutting-edge projects");
             recruiterRepository.save(recruiter);
             log.info("Seeded recruiter: {}", jennifer.getEmail());
         }
@@ -269,9 +253,11 @@ public class DemoDataSeeder implements ApplicationRunner {
     /**
      * Creates a user if it doesn't already exist.
      * Returns the user entity (either existing or newly created).
+     * The returned User is always attached to the current persistence context.
      */
+    @Transactional(propagation = org.springframework.transaction.annotation.Propagation.REQUIRED)
     private User createUserIfNotExists(String email, String name, User.UserRole role) {
-        // Check if user exists and return it
+        // Check if user exists and return it from the database (attached)
         if (userRepository.existsByEmail(email)) {
             log.debug("User {} already exists", email);
             return userRepository.findByEmail(email).orElse(null);
@@ -288,6 +274,8 @@ public class DemoDataSeeder implements ApplicationRunner {
 
         User savedUser = userRepository.save(user);
         log.debug("Created user {} with role {}", email, role);
-        return savedUser;
+        
+        // Refetch to ensure it's attached to persistence context
+        return userRepository.findByEmail(email).orElse(savedUser);
     }
 }

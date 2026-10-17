@@ -1,7 +1,9 @@
 package com.codeforge.config;
 
 import com.codeforge.security.JWTFilter;
+import com.codeforge.security.JWTProvider;
 import com.codeforge.security.RateLimitingFilter;
+import com.codeforge.security.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +18,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 /**
  * Spring Security configuration
@@ -27,8 +30,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JWTFilter jwtFilter;
-    private final RateLimitingFilter rateLimitingFilter;
+    private final JWTProvider jwtProvider;
+    private final UserDetailsServiceImpl userDetailsService;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     /**
      * Password encoder using BCrypt
@@ -51,7 +55,12 @@ public class SecurityConfig {
      */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // Create filter instances directly
+        RateLimitingFilter rateLimitingFilter = new RateLimitingFilter();
+        JWTFilter jwtFilter = new JWTFilter(jwtProvider, userDetailsService);
+        
         http
+            .cors(cors -> cors.configurationSource(corsConfigurationSource))
             .csrf(csrf -> csrf.disable())
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
@@ -72,8 +81,10 @@ public class SecurityConfig {
                 // AI endpoints (any authenticated user) and everything else
                 .anyRequest().authenticated()
             )
-            .addFilterBefore(rateLimitingFilter, JWTFilter.class)
-            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+            // Add filters before UsernamePasswordAuthenticationFilter
+            // Both filters are independent and run before authentication
+            .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(rateLimitingFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

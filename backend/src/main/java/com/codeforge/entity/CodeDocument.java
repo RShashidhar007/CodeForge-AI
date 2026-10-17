@@ -37,7 +37,7 @@ public class CodeDocument {
     @JoinColumn(name = "file_id")
     private File file;
     
-    @Column(nullable = false, columnDefinition = "NVARCHAR(MAX)")
+    @Column(nullable = false, columnDefinition = "NVARCHAR(255)")
     private String filePath;
     
     @Column(nullable = false, length = 255)

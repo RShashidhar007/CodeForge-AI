@@ -11,5 +11,5 @@ import java.util.List;
  */
 @Repository
 public interface AgentExecutionRepository extends JpaRepository<AgentExecution, Long> {
-    List<AgentExecution> findByTaskIdOrderBySequenceOrder(Long taskId);
+    List<AgentExecution> findByAiTaskIdOrderByCreatedAt(Long aiTaskId);
 }

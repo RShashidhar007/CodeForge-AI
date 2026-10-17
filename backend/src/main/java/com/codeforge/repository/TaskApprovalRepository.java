@@ -11,5 +11,5 @@ import java.util.List;
  */
 @Repository
 public interface TaskApprovalRepository extends JpaRepository<TaskApproval, Long> {
-    List<TaskApproval> findByTaskId(Long taskId);
+    List<TaskApproval> findByAiTaskId(Long aiTaskId);
 }

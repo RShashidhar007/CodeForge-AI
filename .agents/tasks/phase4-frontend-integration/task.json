@@ -1,7 +1,0 @@
-{
-  "task_id": "phase4-frontend-integration",
-  "task_description": "Complete frontend integration for GitHub OAuth, repository import with real-time progress tracking, semantic code search, and enhanced AI chat with code blocks and copy functionality",
-  "status": "pending",
-  "feature_order": ["FEAT-001", "FEAT-002", "FEAT-003", "FEAT-004", "FEAT-005"],
-  "blocked_reason": null
-}

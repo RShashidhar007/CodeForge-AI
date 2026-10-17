@@ -1,10 +1,12 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
-         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+         https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
     <modelVersion>4.0.0</modelVersion>
 
+    <!-- Spring Boot Parent -->
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
@@ -12,20 +14,23 @@
         <relativePath/>
     </parent>
 
+    <!-- Project Information -->
     <groupId>com.codeforge</groupId>
     <artifactId>codeforge-backend</artifactId>
     <version>1.0.0</version>
     <name>CodeForge AI - Backend</name>
     <description>Spring Boot backend for CodeForge AI recruitment platform</description>
 
+    <!-- Properties -->
     <properties>
         <java.version>17</java.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <!-- Dependencies -->
     <dependencies>
+
         <!-- Spring Boot Starters -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -59,21 +64,22 @@
             <version>12.4.2.jre11</version>
         </dependency>
 
-        <!-- JWT for authentication -->
+        <!-- JWT Authentication -->
         <dependency>
             <groupId>com.auth0</groupId>
             <artifactId>java-jwt</artifactId>
             <version>4.4.0</version>
         </dependency>
 
-        <!-- Lombok -->
-        <dependency>
-            <groupId>org.projectlombok</groupId>
-            <artifactId>lombok</artifactId>
-            <optional>true</optional>
-        </dependency>
+       <!-- Lombok -->
+<dependency>
+    <groupId>org.projectlombok</groupId>
+    <artifactId>lombok</artifactId>
+    <version>1.18.34</version>
+    <optional>true</optional>
+</dependency>
 
-        <!-- Redis -->
+        <!-- Redis Client -->
         <dependency>
             <groupId>redis.clients</groupId>
             <artifactId>jedis</artifactId>
@@ -86,7 +92,7 @@
             <version>0.12.0</version>
         </dependency>
 
-        <!-- HTTP Client for external APIs -->
+        <!-- WebFlux for External HTTP APIs -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-webflux</artifactId>
@@ -106,21 +112,21 @@
             <version>1.321</version>
         </dependency>
 
-        <!-- Guava (required by Qdrant) -->
+        <!-- Guava -->
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>33.0.0-jre</version>
         </dependency>
 
-        <!-- Protobuf (required by Qdrant) -->
+        <!-- Protobuf -->
         <dependency>
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
             <version>3.25.1</version>
         </dependency>
 
-        <!-- Flyway for Database Migrations -->
+        <!-- Flyway Database Migrations -->
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
@@ -133,7 +139,7 @@
             <version>9.22.3</version>
         </dependency>
 
-        <!-- Configuration Processor for @ConfigurationProperties -->
+        <!-- Configuration Properties Processor -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-configuration-processor</artifactId>
@@ -175,16 +181,20 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Bucket4j for rate limiting -->
+        <!-- Bucket4j Rate Limiting -->
         <dependency>
             <groupId>com.bucket4j</groupId>
             <artifactId>bucket4j-core</artifactId>
             <version>7.6.1</version>
         </dependency>
+
     </dependencies>
 
+    <!-- Build Configuration -->
     <build>
         <plugins>
+
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -198,7 +208,7 @@
                 </configuration>
             </plugin>
 
-            <!-- Surefire: allow Mockito byte-buddy instrumentation on JDK 21+ -->
+            <!-- Surefire Test Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -207,39 +217,32 @@
                     <argLine>
                         -Dnet.bytebuddy.experimental=true
                         -XX:+EnableDynamicAgentLoading
-                        --add-opens java.base/java.lang=ALL-UNNAMED
-                        --add-opens java.base/java.util=ALL-UNNAMED
+                        --add-opens=java.base/java.lang=ALL-UNNAMED
+                        --add-opens=java.base/java.util=ALL-UNNAMED
                     </argLine>
                 </configuration>
             </plugin>
 
-            <!-- Compiler Plugin -->
+            <!-- Maven Compiler Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.12.1</version>
+                <version>3.13.0</version>
                 <configuration>
+                    <release>17</release>
                     <source>17</source>
                     <target>17</target>
                     <annotationProcessorPaths>
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>1.18.30</version>
+                            <version>1.18.34</version>
                         </path>
                     </annotationProcessorPaths>
-                    <!-- Fork to avoid Java 27 issues with Lombok -->
-                    <fork>true</fork>
-                    <forkedPath>${java.home}</forkedPath>
-                    <!-- Suppress module warnings -->
-                    <compilerArgs>
-                        <arg>--add-opens</arg>
-                        <arg>jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED</arg>
-                    </compilerArgs>
                 </configuration>
             </plugin>
 
-            <!-- Assembly Plugin for building JAR -->
+            <!-- Maven Shade Plugin -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
@@ -256,6 +259,7 @@
                     </execution>
                 </executions>
             </plugin>
+
         </plugins>
     </build>
 

@@ -11,5 +11,5 @@ import java.util.List;
  */
 @Repository
 public interface TaskTestResultRepository extends JpaRepository<TaskTestResult, Long> {
-    List<TaskTestResult> findByTaskId(Long taskId);
+    List<TaskTestResult> findByAiTaskId(Long aiTaskId);
 }

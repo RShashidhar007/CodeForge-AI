@@ -137,7 +137,7 @@ public class GithubOAuthService {
      */
     @Transactional
     public void deleteGithubToken(Long userId) {
-        githubTokenRepository.findByUserId(userId).forEach(githubTokenRepository::delete);
-        log.info("Deleted GitHub token(s) for user {}", userId);
+        githubTokenRepository.findByUserId(userId).ifPresent(githubTokenRepository::delete);
+        log.info("Deleted GitHub token for user {}", userId);
     }
 }

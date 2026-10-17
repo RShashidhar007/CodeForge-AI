@@ -49,13 +49,13 @@ public class AuthService {
             .enabled(true)
             .build();
         
+        // Save user first to generate ID
         user = userRepository.save(user);
         
-        // Create candidate profile
-        Candidate candidate = Candidate.builder()
-            .id(user.getId())
-            .user(user)
-            .build();
+        // Create candidate profile - don't use builder for @MapsId relationships
+        Candidate candidate = new Candidate();
+        candidate.setUser(user);
+        
         candidateRepository.save(candidate);
         
         return mapToUserResponse(user);
@@ -78,15 +78,15 @@ public class AuthService {
             .enabled(true)
             .build();
         
+        // Save user first to generate ID
         user = userRepository.save(user);
         
-        // Create recruiter profile
-        Recruiter recruiter = Recruiter.builder()
-            .id(user.getId())
-            .user(user)
-            .phone(request.getPhone())
-            .position(request.getPosition())
-            .build();
+        // Create recruiter profile - don't use builder for @MapsId relationships  
+        Recruiter recruiter = new Recruiter();
+        recruiter.setUser(user);
+        recruiter.setPhone(request.getPhone());
+        recruiter.setPosition(request.getPosition());
+        
         recruiterRepository.save(recruiter);
         
         return mapToUserResponse(user);

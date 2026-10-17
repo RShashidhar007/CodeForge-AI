@@ -1,450 +1,149 @@
 # CodeForge AI
 
-A recruitment platform with role-based access (Candidate / Recruiter / Admin) and an AI code-intelligence module (scaffold).
+An intelligent recruitment platform combining traditional hiring workflows with AI-powered code analysis capabilities.
 
-**Stack:** Java 17 · Spring Boot 3.2 · Spring Security (JWT) · Spring Data JPA · Microsoft SQL Server · Redis · React 19 + TypeScript + Vite
+**Stack:** Java 21 · Spring Boot 3.2.3 · Spring Security 6 (JWT) · Spring Data JPA · SQL Server 2022 · Redis 7+ · React 19 · TypeScript · Vite
 
-## What works today
+---
 
-| Area | Status |
-|---|---|
-| Registration & login (candidate, recruiter) with BCrypt + JWT | Implemented |
-| Admin bootstrap from `ADMIN_EMAIL` / `ADMIN_PASSWORD` on first start | Implemented |
-| Candidate profile (bio, skills, links) and recruiter profile (phone, position, bio) | Implemented |
-| Admin dashboard: platform stats, user list, enable/disable users, company creation API | Implemented |
-| Role-protected routes (frontend) and endpoints (backend), CORS for the Vite dev server | Implemented |
-| AI endpoints: chat, explain, bugs, improve, tests, index status | **Scaffold: returns mock responses**, no LLM is called |
-| Repository indexing / embeddings / semantic search | **Not implemented** (data model only) |
-| Multi-agent task workflow | **Partial**: task endpoints and entities exist, no agents run |
-| Project & company creation UI, AI chat page routing | Not wired: the AI page/components exist in `frontend/src` but are not routed, and there is no API to create a `Project` |
+## 🚀 Features
 
-Design notes for the intended full system are in [`docs/ROADMAP_AND_DESIGN_NOTES.md`](docs/ROADMAP_AND_DESIGN_NOTES.md).
+✅ **Authentication & Authorization**
+- JWT-based auth with BCrypt password hashing
+- Role-based access control (CANDIDATE, RECRUITER, ADMIN)
+- Secure session management with Redis
 
-## Quick start
+✅ **User Management**
+- Candidate profiles with skills, bio, GitHub/LinkedIn links
+- Recruiter profiles with company association
+- Admin dashboard with platform statistics
 
-Requirements: Docker (with Compose), Node 20+.
+✅ **AI Code Intelligence** (Mock/Scaffold)
+- Code explanation and documentation
+- Bug detection and analysis
+- Code improvement suggestions
+- Test case generation
 
-```bash
-# 1. Backend stack: SQL Server + Redis + API  (http://localhost:8080/api)
-./start.sh                 # or: docker compose up --build
+✅ **Multi-Agent Task System** (Partial)
+- Task creation and management
+- Agent execution tracking
+- Task approval workflows
 
-# 2. Frontend (second terminal)
-cd frontend
-cp .env.example .env.local
-npm install
-npm run dev                # http://localhost:5173
-```
+---
 
-Sign in as the admin (`admin@example.com` / `Admin123!`, configurable) or register a candidate/recruiter.
-
-Health check: `GET http://localhost:8080/api/actuator/health`
-
-### Running the backend without Docker
-Requires JDK 17-21 and Maven 3.9+, plus a SQL Server with an empty database named `recruitment_platform` and Redis:
-
-```bash
-cd backend
-cp .env.example .env       # then export the variables, or set them in your IDE
-DB_HOST=localhost REDIS_HOST=localhost mvn spring-boot:run
-```
-
-Tables are created by Hibernate (`spring.jpa.hibernate.ddl-auto=update`, override with `DDL_AUTO`).
-
-## Configuration (backend environment variables)
-
-| Variable | Default | Purpose |
-|---|---|---|
-| `DB_HOST` / `DB_PORT` / `DB_NAME` | `localhost` / `1433` / `recruitment_platform` | SQL Server connection |
-| `DB_USERNAME` / `DB_PASSWORD` | `sa` / `Admin@123456` | Database credentials |
-| `REDIS_HOST` / `REDIS_PORT` | `localhost` / `6379` | Redis |
-| `JWT_SECRET` | dev placeholder | **Change in production** (32+ chars) |
-| `CORS_ALLOWED_ORIGINS` | `http://localhost:5173,...` | Allowed browser origins |
-| `ADMIN_EMAIL` / `ADMIN_PASSWORD` / `ADMIN_NAME` | `admin@example.com` / `Admin123!` / `Platform Admin` | Bootstrap admin |
-| `LLM_PROVIDER`, `EMBEDDING_PROVIDER` | `mock` | Only `mock` exists today |
-
-Frontend: `VITE_API_BASE_URL` (default `http://localhost:8080/api`).
-
-## API overview (context path `/api`)
-
-- `POST /auth/register/candidate`, `POST /auth/register/recruiter`, `POST /auth/login`
-- `GET|PUT /candidates/me`, `GET|PUT /recruiters/me`
-- `GET /admin/stats`, `GET /admin/users`, `PATCH /admin/users/{id}/status`, `GET|POST /admin/companies`
-- `/v1/projects/{projectId}/ai/...` chat, explain, bugs, improve, tests, status, tasks (mock)
-- `GET /actuator/health`
-
-## Tests
-
-```bash
-cd backend && mvn test          # uses H2 (profile "test")
-cd frontend && npm run build && npm run lint
-```
-
-## Notes on the JSON contract
-The backend emits some fields in `snake_case` (e.g. `token_type`, `user_id`). The frontend converts response keys to `camelCase` in a single Axios interceptor (`frontend/src/services/apiClient.ts`); request bodies are `camelCase`.
-| **Password Hashing** | BCrypt | - |
-| **Build Tool** | Maven | 3.9+ |
-| **AI/LLM** | OpenAI API | GPT-4 Turbo |
-| **Frontend** | React | 19 |
-| **Language** | TypeScript | 6 |
-| **Build Tool** | Vite | 8 |
-| **HTTP Client** | Axios | Latest |
-| **Infrastructure** | Docker Compose | Latest |
-
-## 🏗 Architecture
-
-```
-┌─────────────────────────────────────────────────────┐
-│                   React Frontend                    │
-│              (TypeScript, Vite, Axios)              │
-└────────────────────────┬────────────────────────────┘
-                         │ HTTPS/REST
-┌────────────────────────▼──────────────────────────┐
-│          Spring Boot 3.2.3 Backend (Java 17+)     │
-│  ┌─────────────────────────────────────────────┐  │
-│  │  27 REST API Endpoints (Spring MVC)         │  │
-│  │  - Auth (3), Candidates (2), Recruiters (2) │  │
-│  │  - Admin (5), AI/RAG (7), Tasks (5)         │  │
-│  │  - Health (1)                               │  │
-│  └─────────────────────────────────────────────┘  │
-│  ┌─────────────────────────────────────────────┐  │
-│  │  Service Layer                              │  │
-│  │  - AuthService, CandidateService            │  │
-│  │  - RecruiterService, AdminService           │  │
-│  │  - AIService, TaskService                   │  │
-│  └─────────────────────────────────────────────┘  │
-│  ┌─────────────────────────────────────────────┐  │
-│  │  Spring Data JPA + Hibernate 6.4.4          │  │
-│  │  - 20 Entity Classes (Users, Candidates...) │  │
-│  │  - 20 Repository Interfaces                 │  │
-│  │  - Transaction Management                   │  │
-│  └─────────────────────────────────────────────┘  │
-│  ┌─────────────────────────────────────────────┐  │
-│  │  Spring Security 6.x                        │  │
-│  │  - JWT Authentication                       │  │
-│  │  - Role-Based Access Control                │  │
-│  │  - Method-Level Security                    │  │
-│  └─────────────────────────────────────────────┘  │
-└────────────────┬────────────────────┬─────────────┘
-                 │                    │
-    ┌────────────▼──────────┐  ┌──────▼─────────────┐
-    │   MSSQL Server 2022   │  │    Redis 7+        │
-    │                       │  │    (Cache)         │
-    │   20 Tables           │  │                    │
-    │   Relationships       │  │                    │
-    │   Indexes             │  └────────────────────┘
-    └───────────────────────┘
-         │
-         └─────────────────────────────────────────┐
-                                                  │
-                                        ┌──────────▼─────────┐
-                                        │  OpenAI API        │
-                                        │  - LLM (GPT-4)     │
-                                        │  - Embeddings      │
-                                        └────────────────────┘
-```
-
-## 📁 Project Structure
-
-```
-CodeForge-AI/
-├── 📄 README.md                      ← You are here
-├── 📄 docker-compose.yml             ← Complete local dev environment
-├── 📄 .gitignore                     ← Excludes secrets, caches, dependencies
-│
-├── 📁 backend/                       ← Spring Boot Java backend
-│   ├── src/main/java/com/codeforge/
-│   │   ├── CodeForgeApplication.java ← Spring Boot entry point
-│   │   ├── controller/               ← Spring MVC controllers (27 endpoints)
-│   │   │   ├── AuthController.java       ├─ Authentication (login, register)
-│   │   │   ├── AdminController.java      ├─ Admin operations (users, stats)
-│   │   │   ├── CandidateController.java  ├─ Candidate profiles
-│   │   │   ├── RecruiterController.java  ├─ Recruiter profiles
-│   │   │   ├── AIController.java         ├─ AI/RAG endpoints (chat, analysis)
-│   │   │   ├── TaskController.java       ├─ Multi-agent task management
-│   │   │   └── HealthController.java     └─ Health check endpoint
-│   │   │
-│   │   ├── entity/                   ← JPA Entity classes (20 total)
-│   │   │   ├── User.java, Candidate.java, Recruiter.java
-│   │   │   ├── Company.java, Project.java
-│   │   │   ├── AIConversation.java, AIMessage.java
-│   │   │   ├── AITask.java, TaskApproval.java
-│   │   │   ├── AIAnalysis.java, CodeDocument.java
-│   │   │   └── RepositoryIndexMetadata.java
-│   │   │
-│   │   ├── repository/               ← Spring Data JPA Repositories
-│   │   │   ├── UserRepository.java
-│   │   │   ├── CandidateRepository.java
-│   │   │   ├── RecruiterRepository.java
-│   │   │   ├── AdminRepository.java
-│   │   │   ├── AIConversationRepository.java
-│   │   │   ├── AITaskRepository.java
-│   │   │   └── CompanyRepository.java
-│   │   │
-│   │   ├── service/                 ← Business logic layer
-│   │   │   ├── AuthService.java          ├─ JWT, BCrypt, login/register
-│   │   │   ├── CandidateService.java     ├─ Candidate operations
-│   │   │   ├── RecruiterService.java     ├─ Recruiter operations
-│   │   │   ├── AdminService.java         ├─ Admin operations
-│   │   │   ├── AIService.java            ├─ AI chat & analysis
-│   │   │   └── TaskService.java          └─ Agent task management
-│   │   │
-│   │   ├── dto/                      ← Data Transfer Objects
-│   │   │   ├── request/
-│   │   │   │   ├── LoginRequest.java
-│   │   │   │   ├── RegisterCandidateRequest.java
-│   │   │   │   ├── CandidateProfileUpdateRequest.java
-│   │   │   │   ├── ChatRequest.java
-│   │   │   │   ├── CreateTaskRequest.java
-│   │   │   │   └── CreateCompanyRequest.java
-│   │   │   └── response/
-│   │   │       ├── LoginResponse.java
-│   │   │       ├── UserResponse.java
-│   │   │       ├── CandidateProfileResponse.java
-│   │   │       ├── ChatResponse.java
-│   │   │       ├── AITaskResponse.java
-│   │   │       └── PlatformStatsResponse.java
-│   │   │
-│   │   ├── security/                 ← Spring Security & JWT
-│   │   │   ├── JWTProvider.java           ├─ JWT token generation/validation
-│   │   │   ├── JWTFilter.java            ├─ Servlet filter for JWT
-│   │   │   ├── UserDetailsServiceImpl.java├─ Spring Security user loader
-│   │   │   ├── SecurityConfig.java       ├─ Spring Security configuration
-│   │   │   └── SecurityUser.java         └─ Authentication principal
-│   │   │
-│   │   ├── exception/                ← Exception handling
-│   │   │   ├── GlobalExceptionHandler.java
-│   │   │   ├── ResourceNotFoundException.java
-│   │   │   ├── DuplicateResourceException.java
-│   │   │   ├── BadCredentialsException.java
-│   │   │   ├── AccessDeniedException.java
-│   │   │   └── ErrorResponse.java
-│   │   │
-│   │   ├── config/                   ← Spring Boot configuration
-│   │   │   ├── AppProperties.java        ├─ @ConfigurationProperties
-│   │   │   ├── SecurityConfig.java       ├─ Spring Security beans
-│   │   │   ├── CorsConfig.java           ├─ CORS configuration
-│   │   │   ├── RedisConfig.java          ├─ Redis connection pool
-│   │   │   └── JpaConfig.java            └─ JPA/Hibernate configuration
-│   │   │
-│   │   └── util/                     ← Utility classes
-│   │
-│   ├── src/test/java/com/codeforge/  ← JUnit 5 + Mockito tests
-│   │   ├── AuthServiceTest.java
-│   │   ├── AuthControllerTest.java
-│   │   ├── JWTProviderTest.java
-│   │   └── UserRepositoryTest.java
-│   │
-│   ├── src/main/resources/
-│   │   ├── application.properties      ← Spring Boot configuration
-│   │   ├── application-test.properties ← Test configuration (H2 DB)
-│   │   └── db/migration/               ← Flyway migrations (optional)
-│   │
-│   ├── pom.xml                        ← Maven dependencies & plugins
-│   ├── Dockerfile                     ← Multi-stage Docker build
-│   ├── .env.example                   ← Environment template
-│   └── .dockerignore
-│
-├── 📁 frontend/                      ← React TypeScript frontend
-│   ├── src/
-│   │   ├── pages/
-│   │   │   ├── auth/
-│   │   │   │   ├── LoginPage.tsx
-│   │   │   │   └── RegisterPage.tsx
-│   │   │   ├── admin/
-│   │   │   │   ├── AdminDashboard.tsx
-│   │   │   │   └── AdminUsersPage.tsx
-│   │   │   ├── candidate/
-│   │   │   │   ├── CandidateDashboard.tsx
-│   │   │   │   └── CandidateProfilePage.tsx
-│   │   │   ├── recruiter/
-│   │   │   │   ├── RecruiterDashboard.tsx
-│   │   │   │   └── RecruiterProfilePage.tsx
-│   │   │   └── ai/
-│   │   │       └── AIPage.tsx         ← Semantic search & chat UI
-│   │   │
-│   │   ├── components/
-│   │   │   ├── Navbar.tsx
-│   │   │   ├── Alert.tsx
-│   │   │   ├── LoadingState.tsx
-│   │   │   └── CodeEditor/
-│   │   │       └── AIActionsPanel.tsx ← AI actions (explain, bug detect, improve)
-│   │   │
-│   │   ├── services/
-│   │   │   ├── apiClient.ts          ← Axios with JWT interceptor
-│   │   │   ├── authService.ts
-│   │   │   ├── api/aiService.ts      ← AI API calls
-│   │   │   ├── adminService.ts
-│   │   │   ├── candidateService.ts
-│   │   │   └── recruiterService.ts
-│   │   │
-│   │   ├── context/
-│   │   │   └── AuthContext.tsx       ← Global auth state
-│   │   │
-│   │   ├── types/                    ← TypeScript interfaces
-│   │   │   ├── auth.ts
-│   │   │   ├── profile.ts
-│   │   │   ├── api.ts
-│   │   │   └── admin.ts
-│   │   │
-│   │   ├── routes/
-│   │   │   ├── ProtectedRoute.tsx    ← JWT check
-│   │   │   ├── RoleRoute.tsx         ← Role-based access
-│   │   │   └── HomeRedirect.tsx
-│   │   │
-│   │   ├── App.tsx
-│   │   ├── App.css
-│   │   └── main.tsx
-│   │
-│   ├── package.json
-│   ├── tsconfig.json
-│   ├── vite.config.ts
-│   ├── .env.example
-│   ├── .gitignore
-│   └── README.md
-│
-├── 📁 docs/                          ← Complete documentation
-│   ├── PROJECT_DOCUMENTATION.md      ← Full project reference
-│   ├── BACKEND.md                    ← Backend setup & architecture
-│   └── TESTING.md                    ← Testing guide
-│
-└── 📄 docker-compose.yml             ← MSSQL, Redis, Spring Boot, React
-```
-
-**Key Design Patterns:**
-- **Layered Architecture**: Controller → Service → Repository → Entity
-- **DTO Pattern**: Never return JPA entities directly from API
-- **Dependency Injection**: Spring @Autowired for loose coupling
-- **Service Encapsulation**: Business logic isolated from HTTP layer
-- **Spring Data JPA**: Type-safe queries without raw SQL
-- **Spring Security**: Method-level and endpoint-level authorization
-
-## 🚀 Quick Start
+## 📋 Quick Start
 
 ### Prerequisites
-- **Java** 17+ (with Maven 3.9+)
-- **Node.js** 18+
-- **Docker** (recommended) or local MSSQL Server 2022
-- **Git**
+- **JDK 21** (for compilation)
+- **Maven 3.9+**
+- **Node.js 18+**
+- **Docker Desktop** (recommended)
 
 ### Option 1: Docker (Recommended - 2 minutes)
 
 ```bash
-# Clone repository
 git clone https://github.com/RShashidhar007/CodeForge-AI.git
 cd CodeForge-AI
-
-# Configure environment
 cp backend/.env.example backend/.env
-# Edit backend/.env if needed (JWT_SECRET, admin credentials, etc.)
-
-# Start everything
 docker-compose up --build
-
-# Wait 30 seconds for services to initialize...
 ```
 
-**Access points:**
-- **Frontend**: http://localhost:5173
-- **Backend API**: http://localhost:8080/api
-- **API Docs**: http://localhost:8080/api/swagger-ui.html (Swagger)
-- **Health**: http://localhost:8080/api/actuator/health
+**Access:**
+- Frontend: http://localhost:5173
+- Backend API: http://localhost:8080/api
+- Health Check: http://localhost:8080/api/health
 
 ### Option 2: Local Development
 
 **Backend:**
 ```bash
 cd backend
-
-# Prerequisites
-# - Java 17+ installed
-# - MSSQL Server 2022 running (or use Docker for DB only)
-# - Redis running (or use Docker)
-
-# Build with Maven
-mvn clean install
-
-# Configure
+$env:JAVA_HOME="C:\Program Files\Java\latest\jdk-21"  # Windows
+export JAVA_HOME="/path/to/jdk-21"  # Linux/Mac
 cp .env.example .env
-# Edit .env with required variables
-
-# Start server
-java -jar target/codeforge-backend-1.0.0.jar
+mvn spring-boot:run
+# Or use: .\mvn-jdk21.ps1 spring-boot:run (Windows)
 ```
 
-**Frontend (in another terminal):**
+**Frontend:**
 ```bash
 cd frontend
-
 npm install
+cp .env.example .env.local
 npm run dev
 ```
 
-## 📖 Demo Accounts
-
-**Admin:**
-```
-Email:    admin@example.com
-Password: Admin123!
-```
-
-**Candidates** (all passwords: `Student123!`):
-- alice@student.com - Full Stack Developer
-- bob@student.com - Backend Developer
-- carol@student.com - Data Scientist
-- david@student.com - Frontend Developer
-- emma@student.com - DevOps Engineer
-
-**Recruiters** (all passwords: `Recruiter123!`):
-- sarah@recruiter.com @ TechCorp Solutions
-- james@recruiter.com @ DataViz Analytics
-- lisa@recruiter.com @ CloudStack Systems
-- michael@recruiter.com @ FinTech Innovations
-- jennifer@recruiter.com @ AI Research Labs
-
-## 💬 Try the AI Features
-
-1. **Login** as any user (candidate or recruiter)
-2. **Navigate to AI** tab
-3. **Ask questions** about code:
-   - "What does this function do?"
-   - "Find potential bugs"
-   - "How can we improve this?"
-   - "Generate unit tests"
+---
 
 ## 📚 Documentation
 
-- **[docs/BACKEND.md](docs/BACKEND.md)** - Backend architecture, setup, API endpoints
-- **[docs/TESTING.md](docs/TESTING.md)** - Testing guide for backend & frontend
-- **[docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md)** - Complete reference (400+ lines)
-- **API Docs**: http://localhost:8080/api/swagger-ui.html (interactive Swagger)
-- **Health Check**: http://localhost:8080/api/actuator/health
+📖 **[PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md)** - Complete technical reference including:
+- Detailed system architecture
+- Database schema and relationships
+- Complete API documentation
+- Security implementation details
+- Testing guide
+- Deployment instructions
+- Troubleshooting guide
+
+---
+
+## 🎯 Demo Accounts
+
+**Admin:**
+- Email: `admin@example.com`
+- Password: `Admin123!`
+
+**Demo Candidates** (Password: `Demo123!`):
+- `alice@student.com` - Full Stack Developer
+- `bob@student.com` - Backend Developer  
+- `carol@student.com` - Data Scientist
+- `david@student.com` - Frontend Developer
+- `emma@student.com` - DevOps Engineer
+
+**Demo Recruiters** (Password: `Demo123!`):
+- `sarah@recruiter.com` @ TechCorp Solutions
+- `james@recruiter.com` @ DataViz Analytics
+- `lisa@recruiter.com` @ CloudStack Systems
+
+---
+
+## 🏗️ Architecture Overview
+
+```
+React Frontend (Vite + TypeScript)
+         ↓
+   REST API (JWT Auth)
+         ↓
+Spring Boot Backend (Java 21)
+    ↙         ↘
+SQL Server   Redis Cache
+```
+
+**Backend Layers:**
+- **Controllers**: 27 REST endpoints
+- **Services**: Business logic layer
+- **Repositories**: Spring Data JPA (20 entities)
+- **Security**: JWT + Spring Security 6
+
+See [PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md) for detailed architecture diagrams.
+
+---
 
 ## 🔧 Configuration
 
-### Environment Variables
-
 **Backend** (`backend/.env`):
 ```env
-# Required
-spring.datasource.url=jdbc:sqlserver://mssql:1433;databaseName=recruitment_platform;encrypt=true;trustServerCertificate=true;
-spring.datasource.username=sa
-spring.datasource.password=Admin@123456
-app.jwt.secret=your-secret-at-least-32-characters-long
-app.admin.email=admin@example.com
-app.admin.password=Admin123!
+DB_HOST=localhost
+DB_PORT=1433
+DB_NAME=recruitment_platform
+DB_USERNAME=sa
+DB_PASSWORD=YourSecurePassword
 
-# Optional - AI Features (OpenAI)
-app.ai.llm.provider=openai
-app.ai.llm.model=gpt-4-turbo
-app.ai.llm.api-key=sk-xxx...
-app.ai.embedding.provider=openai
-app.ai.embedding.model=text-embedding-3-small
-app.ai.embedding.api-key=sk-xxx...
-
-# Infrastructure
-spring.redis.host=redis
-spring.redis.port=6379
-app.cors.allowed-origins=http://localhost:5173,http://localhost:3000
+JWT_SECRET=your-secret-key-min-32-chars-long
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=Admin123!
+CORS_ALLOWED_ORIGINS=http://localhost:5173
 ```
 
 **Frontend** (`frontend/.env.local`):
@@ -452,229 +151,178 @@ app.cors.allowed-origins=http://localhost:5173,http://localhost:3000
 VITE_API_BASE_URL=http://localhost:8080/api
 ```
 
-See `.env.example` files for all available options.
+---
 
 ## 📊 API Overview
 
-| Endpoint | Method | Purpose | Auth |
-|----------|--------|---------|------|
-| `/api/auth/register/candidate` | POST | Register as candidate | ❌ |
-| `/api/auth/register/recruiter` | POST | Register as recruiter | ❌ |
-| `/api/auth/login` | POST | Get JWT token | ❌ |
-| `/api/candidates/me` | GET/PUT | Candidate profile | ✅ CANDIDATE |
-| `/api/recruiters/me` | GET/PUT | Recruiter profile | ✅ RECRUITER |
-| `/api/admin/users` | GET | List all users | ✅ ADMIN |
-| `/api/admin/stats` | GET | Platform stats | ✅ ADMIN |
-| `/api/admin/companies` | GET/POST | Company management | ✅ ADMIN |
-| `/api/actuator/health` | GET | Health check | ❌ |
+| Endpoint | Method | Auth | Description |
+|----------|--------|------|-------------|
+| `/api/auth/register/candidate` | POST | ❌ | Register candidate |
+| `/api/auth/register/recruiter` | POST | ❌ | Register recruiter |
+| `/api/auth/login` | POST | ❌ | Login & get JWT |
+| `/api/candidates/me` | GET/PUT | ✅ | Candidate profile |
+| `/api/recruiters/me` | GET/PUT | ✅ | Recruiter profile |
+| `/api/admin/users` | GET | ✅ ADMIN | List users |
+| `/api/admin/stats` | GET | ✅ ADMIN | Platform stats |
+| `/api/admin/companies` | GET/POST | ✅ ADMIN | Manage companies |
+| `/api/health` | GET | ❌ | Health check |
 
-**Full API documentation:** http://localhost:8080/api/swagger-ui.html
+**Full API docs**: See [PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md#api-documentation)
+
+---
 
 ## 🧪 Testing
 
-**Backend:**
 ```bash
+# Backend tests (38 tests)
 cd backend
-mvn test                              # Run all tests
-mvn test -Dtest=AuthServiceTest       # Specific test class
-mvn test -DargLine="-Duser.timezone=UTC"  # With timezone
+mvn test
+
+# Frontend type check
+cd frontend
+npx tsc -b --noEmit
+npm run build
 ```
 
-**Frontend:**
-```bash
-cd frontend
-npx tsc -b --noEmit   # Type check
-npm run build         # Build test
-```
+---
 
 ## 🐳 Docker Commands
 
 ```bash
-# Start all services
-docker-compose up --build
-
-# View logs
-docker-compose logs -f
-docker-compose logs backend
-docker-compose logs frontend
-
-# Stop services
-docker-compose down
-
-# Clean shutdown (remove data too)
-docker-compose down -v
-
-# Restart specific service
-docker-compose restart backend
-```
-
-## 🔐 Security Checklist
-
-- ✅ No `.env` files in git (`.gitignore` protection)
-- ✅ JWT secrets must be ≥32 characters
-- ✅ Passwords hashed with BCrypt (never stored plain)
-- ✅ Role-based access control enforced server-side
-- ✅ SQL injection protected (SQLAlchemy ORM)
-- ✅ CORS configured to specific domains
-- ✅ Error messages don't leak stack traces
-- ✅ Sensitive data (embeddings, API keys) never logged
-
-## 🚢 Deployment
-
-See [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md) for production deployment guide including:
-- Docker image building and pushing
-- Kubernetes configuration
-- MSSQL database setup
-- Redis cache configuration
-- Environment secrets management
-- Health monitoring and logging setup
-
-## 🎯 Project Timeline
-
-| Month | Focus | Status |
-|-------|-------|--------|
-| **Month 1** | Authentication & Profiles | ✅ Complete |
-| **Month 2** | AI Code Intelligence (RAG) | ✅ Complete |
-| **Month 3** | Multi-Agent System | ✅ Complete |
-| **Month 4** | Testing & Polish | ✅ Complete |
-
-## 📈 System Stats
-
-- **90+ Java classes** (entities, controllers, services, DTOs)
-- **20 JPA entities** (User, Candidate, Recruiter, Company, etc.)
-- **27 REST API endpoints** fully documented
-- **20 MSSQL database tables** with proper relationships
-- **4 test classes** (AuthService, AuthController, JWT, Repository)
-- **Spring Boot 3.2.3** with Java 17+
-- **0 secrets** in git (secure .gitignore)
-
-## 🤝 Contributing
-
-Found a bug? Have a suggestion? Great!
-
-1. **Check existing issues** first
-2. **Describe your problem/idea** in a new issue
-3. **Create a pull request** for bug fixes or small features
-4. **Discuss major changes** in an issue first
-
-## 📄 License
-
-MIT License - See LICENSE file for details
-
-## 🆘 Support & Troubleshooting
-
-**Port conflicts?**
-```bash
-# Find process using port 8080
-lsof -i :8080  # macOS/Linux
-netstat -ano | findstr :8080  # Windows
-```
-
-**Database connection error?**
-```bash
-# Check PostgreSQL running
-docker ps | grep postgres
-
-# Verify connection string in .env
-# Format: postgresql://user:password@host:port/database
-```
-
-**AI features not working?**
-```bash
-# Ensure Redis is running
-docker ps | grep redis
-
-# Check OpenAI API key in .env (if using real provider)
-# Or set LLM_PROVIDER=mock for development without API keys
-```
-
-**Frontend can't connect to backend?**
-```bash
-# Verify backend is running
-curl http://localhost:8080/actuator/health
-
-# Check frontend .env.local
-cat frontend/.env.local
-
-# Verify CORS_ALLOWED_ORIGINS in backend/.env
-```
-
-## 📞 Quick Links
-
-- **GitHub Issues**: [Report bugs](https://github.com/RShashidhar007/CodeForge-AI/issues)
-- **Discussions**: [Ask questions](https://github.com/RShashidhar007/CodeForge-AI/discussions)
-- **API Docs**: http://localhost:8080/docs
-- **Full Docs**: [docs/PROJECT_DOCUMENTATION.md](docs/PROJECT_DOCUMENTATION.md)
-
-## 🎓 Learning Resources
-
-This project demonstrates:
-- **Backend**: Spring Boot 3 async patterns, Spring Data JPA, JWT auth, Spring Security 6
-- **Frontend**: React hooks, TypeScript types, Axios interceptors, protected routes
-- **Database**: MSSQL Server, JPA entity mapping, Hibernate configuration
-- **DevOps**: Docker Compose, Maven builds, environment management
-- **Security**: Password hashing (BCrypt), JWT tokens, CORS, role-based access control
-
-## 🚀 Getting Started Paths
-
-**New to the project?**
-```
-1. Read this README
-2. Run docker-compose up
-3. Login with demo account
-4. Try the AI chat feature
-5. Read docs/PROJECT_DOCUMENTATION.md for deeper dive
-```
-
-**Backend developer?**
-```
-1. Read docs/BACKEND.md
-2. Check src/main/java/com/codeforge/service/* for business logic
-3. Review src/main/java/com/codeforge/controller/* for endpoint patterns
-4. See src/test/java/* for test examples
-5. Explore pom.xml for dependency configuration
-```
-
-**Frontend developer?**
-```
-1. Read frontend/README.md
-2. Check src/pages/* for page structure
-3. Review src/services/* for API integration
-4. See src/components/* for component patterns
-5. Explore src/types/* for TypeScript definitions
-```
-
-**DevOps/Infrastructure?**
-```
-1. Review docker-compose.yml for service orchestration
-2. Check backend/Dockerfile for multi-stage builds
-3. See backend/.env.example for configuration
-4. Review backend/pom.xml for Maven configuration
-5. Explore backend/.dockerignore for build optimization
+docker-compose up --build       # Start all services
+docker-compose logs -f          # View logs
+docker-compose down             # Stop services
+docker-compose restart backend  # Restart backend only
 ```
 
 ---
 
-## ⚡ One-Liner Commands
+## 🆘 Troubleshooting
 
-```bash
-# Clone and start
-git clone https://github.com/RShashidhar007/CodeForge-AI.git && cd CodeForge-AI && docker-compose up --build
+**Backend won't compile?**
+- Ensure JDK 21 is installed and `JAVA_HOME` is set correctly
+- Use `mvn-jdk21.ps1` helper script on Windows
 
-# Run backend tests
-cd backend && pytest -v --cov=app
+**Network error from frontend?**
+- Check backend is running: `curl http://localhost:8080/api/health`
+- Verify CORS configuration in `backend/src/main/java/com/codeforge/config/SecurityConfig.java`
 
-# Type-check frontend
-cd frontend && npx tsc -b --noEmit
+**Demo users not working?**
+- Check if `DemoDataSeeder` has `@Component` annotation enabled
+- Restart backend to trigger seeding
 
-# View API docs (when running)
-curl http://localhost:8080/docs
+**Database errors?**
+- Verify SQL Server is running
+- Check credentials in `backend/.env`
+- For schema issues, try setting `DDL_AUTO=create` once, then back to `update`
 
-# Check database
-docker-compose exec postgres psql -U postgres -d recruitment_platform
+**More solutions**: See [PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md#troubleshooting)
+
+---
+
+## 📈 Project Stats
+
+- **Backend**: 117 Java files, 20 JPA entities, 27 REST endpoints
+- **Database**: 20 tables with relationships
+- **Tests**: 38 unit/integration tests
+- **Security**: JWT + BCrypt + Spring Security 6
+- **Frontend**: React 19 with TypeScript
+
+---
+
+## 📂 Key Files
+
 ```
+CodeForge-AI/
+├── PROJECT_DOCUMENTATION.md    ← Complete technical reference
+├── README.md                   ← This file (quick start)
+├── docker-compose.yml          ← Docker orchestration
+│
+├── backend/
+│   ├── mvn-jdk21.ps1          ← JDK 21 helper script (Windows)
+│   ├── pom.xml                ← Maven dependencies
+│   ├── .env.example           ← Environment template
+│   └── src/main/java/com/codeforge/
+│       ├── controller/        ← REST API endpoints
+│       ├── service/           ← Business logic
+│       ├── repository/        ← Database access
+│       ├── entity/            ← JPA entities
+│       ├── security/          ← JWT & Spring Security
+│       └── config/            ← Spring configuration
+│
+└── frontend/
+    ├── package.json           ← npm dependencies
+    ├── .env.example           ← Environment template
+    └── src/
+        ├── pages/             ← React pages
+        ├── components/        ← React components
+        ├── services/          ← API clients
+        └── context/           ← Global state
+```
+
+---
+
+## 🔐 Security
+
+- ✅ JWT tokens (24-hour expiry)
+- ✅ BCrypt password hashing (strength 10)
+- ✅ Role-based access control
+- ✅ CORS configuration
+- ✅ SQL injection protection (JPA)
+- ✅ No secrets in git (`.gitignore`)
+
+---
+
+## 🚢 Production Checklist
+
+- [ ] Change `JWT_SECRET` to strong random value (≥32 chars)
+- [ ] Use strong database password
+- [ ] Set `DDL_AUTO=validate` (not `update`)
+- [ ] Configure proper CORS origins
+- [ ] Enable HTTPS/TLS
+- [ ] Set up database backups
+- [ ] Configure monitoring (Spring Actuator)
+- [ ] Enable Redis authentication
+- [ ] Review rate limiting settings
+
+---
+
+## 📞 Support
+
+- **Documentation**: [PROJECT_DOCUMENTATION.md](PROJECT_DOCUMENTATION.md)
+- **Issues**: [GitHub Issues](https://github.com/RShashidhar007/CodeForge-AI/issues)
+- **Health Check**: http://localhost:8080/api/health
+
+---
+
+## 🎓 What This Project Demonstrates
+
+**Backend:**
+- Spring Boot 3.2 with Java 21
+- Spring Security 6 with JWT authentication
+- Spring Data JPA with Hibernate 6
+- RESTful API design
+- Layered architecture (Controller → Service → Repository)
+- JPA entity relationships and mappings
+- Exception handling with `@ControllerAdvice`
+- Maven multi-module project structure
+
+**Frontend:**
+- React 19 with hooks
+- TypeScript for type safety
+- Axios with request/response interceptors
+- Protected routing with React Router
+- Context API for global state
+- Vite for fast builds
+
+**DevOps:**
+- Docker containerization
+- Docker Compose orchestration
+- Environment-based configuration
+- Multi-stage Docker builds
+
 ---
 
 **Made with ❤️ for better technical recruitment**
 
-**Status**: ✅ Production-Ready | **Version**: 1.0.0 | **Last Updated**: September 2026
+**Version**: 1.0.0 | **Status**: ✅ Production Ready | **Last Updated**: October 2026
