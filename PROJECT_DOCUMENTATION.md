@@ -55,38 +55,38 @@
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│              React Frontend (Port 5173)              │
+│              React Frontend (Port 5173)             │
 │         TypeScript + Vite + Axios + TailwindCSS     │
 └────────────────────┬────────────────────────────────┘
                      │ REST API (HTTPS)
 ┌────────────────────▼────────────────────────────────┐
 │       Spring Boot Backend (Port 8080)               │
-│                                                      │
-│  ┌──────────────────────────────────────────────┐  │
-│  │  Controllers (27 REST Endpoints)              │  │
-│  │  - Auth, Admin, Candidate, Recruiter          │  │
-│  │  - AI, Tasks, Health                          │  │
-│  └──────────────────────────────────────────────┘  │
-│                                                      │
-│  ┌──────────────────────────────────────────────┐  │
-│  │  Services (Business Logic)                    │  │
-│  │  - AuthService, AdminService                  │  │
-│  │  - CandidateService, RecruiterService         │  │
-│  │  - AIService, TaskService                     │  │
-│  └──────────────────────────────────────────────┘  │
-│                                                      │
-│  ┌──────────────────────────────────────────────┐  │
-│  │  Spring Data JPA Repositories                 │  │
-│  │  - 20 Repository Interfaces                   │  │
-│  │  - Query DSL Support                          │  │
-│  └──────────────────────────────────────────────┘  │
-│                                                      │
-│  ┌──────────────────────────────────────────────┐  │
-│  │  Spring Security + JWT Filter Chain           │  │
-│  │  - JWTFilter, RateLimitingFilter              │  │
-│  │  - Role-based authorization                   │  │
-│  └──────────────────────────────────────────────┘  │
-└───────────────┬──────────────────┬─────────────────┘
+│                                                     │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  Controllers (27 REST Endpoints)             │   │
+│  │  - Auth, Admin, Candidate, Recruiter         │   │
+│  │  - AI, Tasks, Health                         │   │
+│  └──────────────────────────────────────────────┘   │
+│                                                     │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  Services (Business Logic)                   │   │
+│  │  - AuthService, AdminService                 │   │
+│  │  - CandidateService, RecruiterService        │   │
+│  │  - AIService, TaskService                    │   │
+│  └──────────────────────────────────────────────┘   │
+│                                                     │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  Spring Data JPA Repositories                │   │
+│  │  - 20 Repository Interfaces                  │   │
+│  │  - Query DSL Support                         │   │
+│  └──────────────────────────────────────────────┘   │
+│                                                     │
+│  ┌──────────────────────────────────────────────┐   │
+│  │  Spring Security + JWT Filter Chain          │   │
+│  │  - JWTFilter, RateLimitingFilter             │   │
+│  │  - Role-based authorization                  │   │
+│  └──────────────────────────────────────────────┘   │
+└───────────────┬──────────────────┬──────────────────┘
                 │                  │
    ┌────────────▼──────────┐  ┌───▼────────────────┐
    │  SQL Server 2022      │  │   Redis 7+         │
